@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import Listing from '../../components/Listing.astro';
+import { getPosts, parsePage } from '../../lib/wp';
+import { cachePublic } from '../../lib/http';
+
+const page = parsePage(Astro.params.rest);
+if (page === null) return Astro.rewrite('/404');
+if (page === 1 && Astro.params.rest) return Astro.redirect('/ultimas', 301);
+
+const data = await getPosts({ page, perPage: 15 });
+if (page > 1 && data.posts.length === 0) return Astro.rewrite('/404');
+cachePublic(Astro);
+---
+
+<Base title={page > 1 ? `Últimas notícias — página ${page}` : 'Últimas notícias'}>
+  <Listing title="Últimas notícias" data={data} page={page} base="/ultimas" />
+</Base>

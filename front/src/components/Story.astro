@@ -1,0 +1,89 @@
+---
+/**
+ * Chamada de notícia. Variantes:
+ *  - lead:    manchete da capa (imagem grande, título enorme, linha fina)
+ *  - card:    imagem em cima, título e linha fina
+ *  - row:     miniatura à direita, para listagens
+ *  - compact: só chapéu/hora e título
+ */
+import { type Post, formatAgo } from '../lib/wp';
+
+interface Props {
+  post: Post;
+  variant?: 'lead' | 'card' | 'row' | 'compact';
+  showKicker?: boolean;
+  showExcerpt?: boolean;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { post, variant = 'card', showKicker = true, showExcerpt = variant !== 'compact', headingLevel = 'h3' } = Astro.props;
+const Heading = headingLevel;
+const href = `/noticias/${post.slug}`;
+const section = post.categories[0];
+const image = variant === 'compact' ? null : post.image;
+---
+
+<article class:list={['story', variant, { 'has-image': image }]}>
+  {image && (
+    <a class="media" href={href} tabindex="-1" aria-hidden="true">
+      <img
+        src={variant === 'lead' ? image.url : image.thumb}
+        alt=""
+        loading={variant === 'lead' ? 'eager' : 'lazy'}
+        fetchpriority={variant === 'lead' ? 'high' : undefined}
+      />
+    </a>
+  )}
+  <div class="body">
+    {(showKicker && section) || variant === 'compact' ? (
+      <p class="meta-top">
+        {showKicker && section && <a class="kicker" href={`/${section.slug}`}>{section.name}</a>}
+        {variant === 'compact' && <time datetime={post.date}>{formatAgo(post.date)}</time>}
+      </p>
+    ) : null}
+    <Heading class="title"><a href={href} set:html={post.title} /></Heading>
+    {showExcerpt && <div class="excerpt" set:html={post.excerpt} />}
+    {variant !== 'compact' && <p class="meta"><time datetime={post.date}>{formatAgo(post.date)}</time></p>}
+  </div>
+</article>
+
+<style>
+  .story { position: relative; }
+  .title { margin: 0; font-family: var(--serif); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+  .title a { text-decoration: none; }
+  .title a:hover { color: var(--accent); }
+  .excerpt { color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+  .excerpt :global(p) { margin: 0.5rem 0 0; }
+  .meta { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.78rem; }
+  .meta-top { display: flex; align-items: baseline; gap: 0.6rem; margin: 0; }
+  .meta-top .kicker { margin: 0 0 0.3rem; }
+  .meta-top time { color: var(--muted); font-size: 0.75rem; }
+
+  .media { display: block; overflow: hidden; background: var(--soft); }
+  .media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform 0.3s; }
+  .story:hover .media img { transform: scale(1.02); }
+
+  /* lead */
+  .lead .media { margin-bottom: 1rem; }
+  .lead .title { font-size: clamp(1.8rem, 4vw, 2.75rem); line-height: 1.1; }
+  .lead .excerpt { font-family: var(--serif); font-size: 1.15rem; }
+
+  /* card */
+  .card .media { margin-bottom: 0.75rem; }
+  .card .title { font-size: 1.25rem; }
+
+  /* row */
+  .row { display: grid; grid-template-columns: 1fr; gap: 1rem; padding-block: 1.25rem; border-bottom: 1px solid var(--line); }
+  .row.has-image { grid-template-columns: 1fr 14rem; }
+  .row .media { order: 2; }
+  .row .title { font-size: 1.4rem; }
+  @media (max-width: 40rem) {
+    .row.has-image { grid-template-columns: 1fr 7rem; }
+    .row .title { font-size: 1.15rem; }
+    .row .excerpt { display: none; }
+  }
+
+  /* compact */
+  .compact { padding-block: 0.8rem; border-bottom: 1px solid var(--line); }
+  .compact .title { font-size: 1.05rem; line-height: 1.3; }
+</style>

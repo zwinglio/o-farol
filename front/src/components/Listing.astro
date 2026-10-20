@@ -1,0 +1,37 @@
+---
+/** Lista cronológica paginada — usada em /ultimas e nas editorias. */
+import Story from './Story.astro';
+import Pagination from './Pagination.astro';
+import type { PostPage } from '../lib/wp';
+
+interface Props { title: string; description?: string; data: PostPage; page: number; base: string; showKicker?: boolean }
+const { title, description, data, page, base, showKicker = true } = Astro.props;
+---
+
+<div class="listing">
+  <header class="head">
+    <h1>{title}</h1>
+    {description && <p class="desc">{description}</p>}
+    {page > 1 && <p class="desc">Página {page}</p>}
+  </header>
+
+  {data.posts.length === 0 ? (
+    <p class="empty">Nenhuma notícia publicada aqui ainda.</p>
+  ) : (
+    <>
+      {data.posts.map((post, i) => (
+        <Story post={post} variant={i === 0 && page === 1 ? 'lead' : 'row'} showKicker={showKicker} headingLevel="h2" />
+      ))}
+      <Pagination current={page} total={data.totalPages} base={base} />
+    </>
+  )}
+</div>
+
+<style>
+  .listing { max-width: 52rem; }
+  .head { padding-bottom: 1rem; margin-bottom: 1.5rem; border-bottom: 3px solid var(--text); }
+  h1 { margin: 0; font-family: var(--sans); font-size: 2rem; font-weight: 800; letter-spacing: -0.01em; }
+  .desc { margin: 0.35rem 0 0; color: var(--muted); }
+  .listing > :global(.lead) { padding-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
+  .empty { color: var(--muted); font-family: var(--serif); font-size: 1.15rem; }
+</style>

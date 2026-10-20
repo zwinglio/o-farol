@@ -1,0 +1,99 @@
+---
+import Base from '../layouts/Base.astro';
+import Story from '../components/Story.astro';
+import { getPosts, getCategories, getMenu, type Post } from '../lib/wp';
+import { getSiteSeo } from '../lib/seo';
+import { cachePublic } from '../lib/http';
+
+const [{ posts: latest }, { posts: pinned }, categories, menu, site] = await Promise.all([
+  getPosts({ perPage: 8 }),
+  getPosts({ perPage: 1, sticky: true }),
+  getCategories(),
+  getMenu('principal'),
+  getSiteSeo(),
+]);
+
+// Manchete: o post fixado no WordPress ("Fixar no topo do blog");
+// sem nenhum fixado, a notícia mais recente que tenha imagem.
+const lead: Post | undefined = pinned[0] ?? latest.find((p) => p.image) ?? latest[0];
+const recent = latest.filter((p) => p.id !== lead?.id).slice(0, 5);
+
+// Cada editoria do menu Principal vira um bloco, na mesma ordem, com as
+// 4 notícias mais recentes dela (fora a manchete, que já está no topo).
+const sections = await Promise.all(
+  menu
+    .filter((item) => item.category)
+    .map(async (item) => {
+      const category = categories.find((c) => c.slug === item.category);
+      const posts: Post[] = category
+        ? (await getPosts({ category: category.id, perPage: 4, exclude: lead ? [lead.id] : [] })).posts
+        : [];
+      return { slug: item.category!, name: item.label, posts };
+    }),
+);
+
+cachePublic(Astro);
+---
+
+<Base schema={site.schema}>
+  <h1 class="visually-hidden">O Farol — capa</h1>
+
+  {!lead ? (
+    <p class="empty">Nenhuma notícia publicada ainda.</p>
+  ) : (
+    <>
+      <section class="top" aria-label="Destaques">
+        <div class="lead-col">
+          <Story post={lead} variant="lead" headingLevel="h2" />
+        </div>
+        {recent.length > 0 && (
+          <aside class="latest" aria-labelledby="ultimas-titulo">
+            <h2 id="ultimas-titulo" class="section-title"><a href="/ultimas">Últimas</a></h2>
+            {recent.map((post) => <Story post={post} variant="compact" />)}
+            <a class="more" href="/ultimas">Todas as notícias →</a>
+          </aside>
+        )}
+      </section>
+
+      {sections.filter((s) => s.posts.length > 0).map((section) => (
+        <section class="section" aria-labelledby={`secao-${section.slug}`}>
+          <h2 id={`secao-${section.slug}`} class="section-title"><a href={`/${section.slug}`}>{section.name}</a></h2>
+          <div class="section-grid">
+            {section.posts.map((post) => <Story post={post} variant="card" showKicker={false} showExcerpt={false} />)}
+          </div>
+          <a class="more" href={`/${section.slug}`}>Mais de {section.name} →</a>
+        </section>
+      ))}
+    </>
+  )}
+</Base>
+
+<style>
+  .top {
+    display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 2.5rem;
+    padding-bottom: 2.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--line);
+  }
+  .latest :global(.compact:last-of-type) { border-bottom: 0; }
+
+  .section + .section { margin-top: 3rem; }
+  .section-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; }
+  .section-grid :global(.card .title) { font-size: 1.1rem; }
+
+  .more {
+    display: inline-block; margin-top: 0.9rem;
+    font-size: 0.85rem; font-weight: 700; text-decoration: none; color: var(--accent);
+  }
+  .empty { color: var(--muted); font-family: var(--serif); font-size: 1.15rem; }
+
+  @media (max-width: 60rem) {
+    .top { grid-template-columns: 1fr; gap: 2rem; }
+    .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  /* No celular: só a primeira chamada de cada editoria leva imagem. */
+  @media (max-width: 40rem) {
+    .section-grid { grid-template-columns: 1fr; gap: 0; }
+    .section-grid > :global(.story:not(:first-child)) { padding-block: 0.8rem; border-bottom: 1px solid var(--line); }
+    .section-grid > :global(.story:not(:first-child) .media) { display: none; }
+    .section-grid > :global(.story:first-child) { padding-bottom: 0.8rem; border-bottom: 1px solid var(--line); }
+  }
+</style>

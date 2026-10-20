@@ -1,0 +1,138 @@
+/*
+ * Tokens do portal. A tipografia do editor do WordPress espelha estes valores
+ * em wordpress/wp-content/themes/farol-headless/theme.json — mude nos dois.
+ */
+:root {
+  --bg: #ffffff;
+  --soft: #f4f4f6;
+  --text: #16171a;
+  --muted: #5b5e66;
+  --line: #e3e4e8;
+  --accent: #c4161c;
+  --accent-dark: #9c1015;
+  --accent-ink: #ffffff;
+
+  --serif: Charter, 'Bitstream Charter', 'Iowan Old Style', 'Source Serif Pro', Georgia, serif;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --wide: 75rem;
+  --measure: 40rem;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 0.18em; }
+a:hover { color: var(--accent); }
+
+img, video, iframe { max-width: 100%; height: auto; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+main { flex: 1; }
+
+.container {
+  width: 100%;
+  max-width: var(--wide);
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.measure { max-width: var(--measure); margin-inline: auto; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute; left: -999px; top: 0.5rem; z-index: 10;
+  background: var(--accent); color: var(--accent-ink); padding: 0.5rem 1rem;
+}
+.skip-link:focus { left: 0.5rem; }
+
+/* Chapéu: editoria em caixa-alta, vermelha */
+.kicker {
+  display: inline-block;
+  margin: 0 0 0.35rem;
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+a.kicker:hover { color: var(--accent-dark); }
+
+/* Título de seção da capa: "POLÍTICA ——" */
+.section-title {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin: 0 0 1.25rem;
+  font-family: var(--sans); font-size: 0.95rem; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.section-title::after { content: ''; flex: 1; border-top: 3px solid var(--text); }
+.section-title a { text-decoration: none; }
+
+/* ---------- Corpo do texto vindo do WordPress ---------- */
+.prose {
+  font-family: var(--serif);
+  font-size: 1.1875rem;
+  line-height: 1.75;
+  overflow-wrap: break-word;
+}
+.prose > * + * { margin-top: 1.25em; }
+.prose p { margin: 0; }
+.prose p + p { margin-top: 1.25em; }
+.prose h2, .prose h3, .prose h4 {
+  font-family: var(--sans);
+  line-height: 1.3;
+  margin: 2em 0 0.5em;
+}
+.prose h2 { font-size: 1.45rem; }
+.prose h3 { font-size: 1.2rem; }
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose li + li { margin-top: 0.4em; }
+.prose blockquote, .prose .wp-block-quote {
+  margin-inline: 0;
+  padding: 0.25em 0 0.25em 1.1em;
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+  font-style: italic;
+}
+.prose .wp-block-pullquote {
+  margin-inline: 0; padding: 1.25em 0;
+  border-top: 3px solid var(--accent); border-bottom: 1px solid var(--line);
+  font-size: 1.4rem; font-style: italic;
+}
+.prose .wp-block-pullquote blockquote { border: 0; padding: 0; color: var(--text); }
+.prose blockquote cite { display: block; margin-top: 0.5em; font-family: var(--sans); font-size: 0.85rem; font-style: normal; }
+.prose figure { margin-inline: 0; }
+.prose figcaption, .prose .wp-element-caption {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.5em;
+}
+.prose img { display: block; }
+.prose hr { border: 0; border-top: 1px solid var(--line); margin: 2.5em auto; width: 40%; }
+.prose pre, .prose code { font-size: 0.85em; }
+.prose pre { overflow-x: auto; padding: 1em; background: var(--soft); }
+.prose table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 0.9rem; }
+.prose th, .prose td { border-bottom: 1px solid var(--line); padding: 0.5em; text-align: left; }
+.prose .wp-block-embed__wrapper iframe, .prose iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; }
+.prose .aligncenter { margin-inline: auto; }

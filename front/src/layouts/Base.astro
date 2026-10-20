@@ -1,0 +1,98 @@
+---
+import '../styles/global.css';
+import '../styles/fontes.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { PUBLIC_SITE_URL } from 'astro:env/client';
+import { SITE } from '../lib/site';
+import { getSiteSeo, jsonLd, type PostSeo } from '../lib/seo';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** SEO completo da notícia (plugin farol-seo); tem prioridade sobre os campos acima. */
+  seo?: PostSeo;
+  publishedTime?: string;
+  modifiedTime?: string;
+  /** JSON-LD extra desta página. */
+  schema?: Record<string, unknown>[];
+  noindex?: boolean;
+}
+
+const { title, description, seo, publishedTime, modifiedTime, schema = [], noindex = false } = Astro.props;
+const site = await getSiteSeo();
+
+const meta = seo?.seo;
+const pageTitle = meta?.title ?? title;
+const fullTitle = pageTitle ? `${pageTitle} · ${site.name}` : `${site.name} — ${SITE.tagline.toLowerCase()}`;
+const desc = meta?.description || description || site.description || SITE.description;
+const canonical = meta?.canonical ?? new URL(Astro.url.pathname, PUBLIC_SITE_URL).href;
+const robots = noindex ? 'noindex, follow' : (meta?.robots ?? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+const image = meta?.og.image ?? (site.image ? { url: site.image, width: 1200, height: 630, alt: '' } : null);
+const schemas = [...(seo?.schema ?? []), ...schema];
+const rss = new URL('/rss.xml', PUBLIC_SITE_URL).href;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <meta name="robots" content={robots} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href={rss} />
+    {seo?.geo.author.name && <meta name="author" content={seo.geo.author.name} />}
+    {meta?.keywords.length ? <meta name="keywords" content={meta.keywords.join(', ')} /> : null}
+    {site.verification.google && <meta name="google-site-verification" content={site.verification.google} />}
+    {site.verification.bing && <meta name="msvalidate.01" content={site.verification.bing} />}
+
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:type" content={seo ? 'article' : 'website'} />
+    <meta property="og:title" content={meta?.og.title ?? pageTitle ?? site.name} />
+    <meta property="og:description" content={meta?.og.description ?? desc} />
+    <meta property="og:url" content={canonical} />
+    {image && <meta property="og:image" content={image.url} />}
+    {image && <meta property="og:image:width" content={String(image.width)} />}
+    {image && <meta property="og:image:height" content={String(image.height)} />}
+    {image?.alt && <meta property="og:image:alt" content={image.alt} />}
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+    {seo?.geo.section && <meta property="article:section" content={seo.geo.section} />}
+    {seo?.geo.tags.map((t) => <meta property="article:tag" content={t} />)}
+
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    {site.x_handle && <meta name="twitter:site" content={`@${site.x_handle}`} />}
+
+    {schemas.map((s) => <script type="application/ld+json" set:html={jsonLd(s)} />)}
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <Header />
+    <main id="conteudo" class="container">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // Bloco Fonte: troca a miniatura pelo player só quando o leitor clica
+      // (nada de YouTube/TikTok/Vimeo carregando antes disso).
+      document.addEventListener('click', (event) => {
+        const player = (event.target as HTMLElement).closest<HTMLAnchorElement>('.farol-fonte__player[data-embed]');
+        if (!player || event.metaKey || event.ctrlKey) return;
+        event.preventDefault();
+        const iframe = document.createElement('iframe');
+        iframe.src = player.dataset.embed!;
+        iframe.title = player.dataset.title || 'Vídeo';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+        iframe.allowFullscreen = true;
+        player.replaceChildren(iframe);
+        player.removeAttribute('href');
+        player.removeAttribute('data-embed');
+      });
+    </script>
+  </body>
+</html>

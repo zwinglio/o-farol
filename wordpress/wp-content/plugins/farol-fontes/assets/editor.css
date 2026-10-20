@@ -1,0 +1,12 @@
+/* Bloco Fonte — estilos só do editor (o resto vem de fonte.css, cópia do front). */
+.farol-fonte-editor { margin-block: 1.5rem; }
+.farol-fonte-editor .farol-fonte { margin: 0; }
+.farol-fonte-editor__form { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+.farol-fonte-editor__form input { flex: 1 1 16rem; }
+.farol-fonte-editor__error { width: 100%; margin-top: 12px; }
+.farol-fonte-editor__error .components-notice { margin: 0 0 8px; }
+.farol-fonte-editor__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.farol-fonte-editor__caption { margin-top: 0.5rem; color: #5b5e66; font-size: 0.85rem; font-family: system-ui, sans-serif; }
+.farol-fonte-editor__help { color: #757575; font-size: 12px; margin-top: 0; }
+.farol-fonte-editor__label { margin: 16px 0 8px; font-size: 11px; font-weight: 500; text-transform: uppercase; }
+.farol-fonte-editor__image img { width: 100%; margin-bottom: 8px; border-radius: 2px; }

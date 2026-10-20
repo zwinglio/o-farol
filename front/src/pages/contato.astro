@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+
+// TODO: definir o destino do envio (endpoint no WordPress ou serviço de e-mail).
+// Por enquanto o formulário não tem `action`.
+const subjects = ['Sugestão de pauta', 'Correção', 'Denúncia', 'Imprensa e parcerias', 'Outro assunto'];
+---
+
+<Base title="Contato" description="Fale com a redação do O Farol: sugestões de pauta, correções e denúncias.">
+  <div class="measure">
+    <h1>Contato</h1>
+    <p class="intro">
+      Sugestões de pauta, correções, denúncias ou qualquer outro assunto: escreva para a redação.
+    </p>
+
+    <form class="form" method="post">
+      <div class="row">
+        <label class="field">
+          <span>Nome</span>
+          <input type="text" name="nome" autocomplete="name" required />
+        </label>
+        <label class="field">
+          <span>E-mail</span>
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Assunto</span>
+        <select name="assunto" required>
+          {subjects.map((s) => <option>{s}</option>)}
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Mensagem</span>
+        <textarea name="mensagem" rows="7" required></textarea>
+      </label>
+
+      <button type="submit">Enviar mensagem</button>
+    </form>
+  </div>
+</Base>
+
+<style>
+  h1 { font-family: var(--serif); font-size: 2.4rem; line-height: 1.1; margin: 0 0 0.75rem; }
+  .intro { margin: 0 0 2rem; color: var(--muted); font-family: var(--serif); font-size: 1.15rem; }
+
+  .form { display: grid; gap: 1.25rem; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .field { display: grid; gap: 0.35rem; }
+  .field span { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  input, select, textarea {
+    width: 100%; padding: 0.7rem 0.8rem;
+    font: inherit; color: var(--text); background: var(--bg);
+    border: 1px solid #c9cbd1; border-radius: 0;
+  }
+  textarea { resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent); }
+
+  button {
+    justify-self: start; padding: 0.8rem 1.6rem;
+    font: inherit; font-weight: 700; letter-spacing: 0.03em;
+    color: var(--accent-ink); background: var(--accent); border: 0; cursor: pointer;
+  }
+  button:hover { background: var(--accent-dark); }
+
+  @media (max-width: 40rem) {
+    .row { grid-template-columns: 1fr; }
+    button { justify-self: stretch; }
+  }
+</style>

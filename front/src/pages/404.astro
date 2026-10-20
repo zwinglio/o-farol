@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+Astro.response.status = 404;
+---
+
+<Base title="Página não encontrada" noindex>
+  <h1>Página não encontrada</h1>
+  <p class="text">O endereço pode ter mudado ou a notícia foi removida.</p>
+  <p><a href="/">← Voltar para as notícias</a></p>
+</Base>
+
+<style>
+  h1 { font-family: var(--serif); font-size: 2rem; margin: 0 0 1rem; }
+  .text { color: var(--muted); }
+</style>

@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "farol/fonte",
+	"title": "Fonte",
+	"category": "embed",
+	"icon": "admin-links",
+	"description": "Cite um post, vídeo ou matéria de outro veículo. Guarda uma cópia (texto, autor, imagens) para a citação sobreviver ao original.",
+	"keywords": [ "embed", "incorporar", "citação", "youtube", "x", "twitter", "bluesky", "tiktok", "vimeo", "link" ],
+	"textdomain": "farol-fontes",
+	"attributes": {
+		"url": { "type": "string", "default": "" },
+		"mode": { "type": "string", "default": "" },
+		"source": { "type": "object" },
+		"caption": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide" ]
+	},
+	"editorScript": "file:./build/index.js",
+	"editorStyle": [ "file:./assets/fonte.css", "file:./assets/editor.css" ]
+}

@@ -1,0 +1,73 @@
+/* Painel SEO e GEO — editor de blocos */
+
+.farol-scores { display: grid; gap: 10px; }
+.farol-scores__rings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.farol-scores__status { display: flex; align-items: center; gap: 6px; min-height: 20px; color: #757575; font-size: 12px; }
+.farol-scores__status .components-spinner { margin: 0; }
+
+.farol-ring { display: flex; align-items: center; gap: 10px; --c: #949494; }
+.farol-ring.is-good { --c: #1a7f37; }
+.farol-ring.is-ok { --c: #b26200; }
+.farol-ring.is-bad { --c: #c4161c; }
+.farol-ring__circle {
+	display: grid; place-items: center; flex: none;
+	width: 52px; height: 52px; border-radius: 50%;
+	background: conic-gradient(var(--c) calc(var(--p) * 1%), #e8e8e8 0);
+}
+.farol-ring__circle span {
+	display: grid; place-items: center;
+	width: 42px; height: 42px; border-radius: 50%;
+	background: #fff; font-size: 16px; font-weight: 700; color: var(--c);
+}
+.farol-ring__label { display: grid; line-height: 1.3; }
+.farol-ring__label strong { font-size: 13px; }
+.farol-ring__label span { color: #757575; font-size: 11px; }
+
+.farol-scores.is-compact .farol-ring__circle { width: 44px; height: 44px; }
+.farol-scores.is-compact .farol-ring__circle span { width: 36px; height: 36px; font-size: 14px; }
+.farol-open { margin-top: 12px; width: 100%; justify-content: center; }
+
+.farol-field { margin-bottom: 18px; }
+.farol-field__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 6px; font-size: 11px; }
+.farol-field__meta .components-button.is-link { font-size: 11px; }
+.farol-mode { padding: 1px 6px; border-radius: 2px; background: #f0f0f0; color: #757575; text-transform: uppercase; letter-spacing: .04em; font-weight: 600; font-size: 10px; }
+.farol-mode.is-custom { background: #e7f0fa; color: #0a4b78; }
+.farol-field textarea::placeholder, .farol-field input::placeholder { color: #8a8a8a; opacity: 1; }
+
+.farol-counter { font-variant-numeric: tabular-nums; font-weight: 600; }
+.farol-counter.is-good { color: #1a7f37; }
+.farol-counter.is-ok { color: #b26200; }
+.farol-counter.is-bad { color: #c4161c; }
+
+.farol-snippet {
+	margin-bottom: 16px; padding: 12px; border: 1px solid #e0e0e0; border-radius: 4px;
+	font-family: Arial, sans-serif; background: #fff;
+}
+.farol-snippet__site { font-size: 12px; color: #202124; }
+.farol-snippet__url { font-size: 11px; color: #4d5156; word-break: break-all; }
+.farol-snippet__title { margin: 4px 0 2px; color: #1a0dab; font-size: 16px; line-height: 1.3; }
+.farol-snippet__desc { color: #4d5156; font-size: 12px; line-height: 1.5; }
+
+.farol-checks { margin: 0; padding: 0; list-style: none; }
+.farol-checks li { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+.farol-checks li:last-child { border-bottom: 0; }
+.farol-checks strong { font-size: 12px; }
+.farol-checks p { margin: 2px 0 0; color: #4a4a4a; font-size: 12px; line-height: 1.45; }
+.farol-checks__dot { flex: none; width: 10px; height: 10px; margin-top: 4px; border-radius: 50%; background: #949494; }
+.farol-checks .is-good .farol-checks__dot { background: #1a7f37; }
+.farol-checks .is-ok .farol-checks__dot { background: #e0a100; }
+.farol-checks .is-bad .farol-checks__dot { background: #c4161c; }
+
+.farol-label { margin: 0 0 8px; font-size: 11px; font-weight: 500; text-transform: uppercase; }
+.farol-muted { margin: 0 0 12px; color: #757575; font-size: 12px; }
+.farol-og-img { display: block; width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; margin-bottom: 8px; border-radius: 2px; }
+.farol-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+/* IA */
+.farol-ai-all { margin-top: 14px; padding-top: 14px; border-top: 1px solid #f0f0f0; }
+.farol-ai-all__button { width: 100%; justify-content: center; }
+.farol-ai-all .farol-muted { margin: 6px 0 0; }
+.farol-ai-off { margin: 12px 0 0; }
+.farol-field__meta .farol-ai-link { margin-left: auto; font-weight: 600; color: #6b3fa0; }
+.farol-field__meta .farol-ai-link:hover:not(:disabled) { color: #4c2a75; }
+.farol-ai-link .components-spinner { width: 12px; height: 12px; margin: 0; }

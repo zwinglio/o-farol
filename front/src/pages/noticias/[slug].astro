@@ -1,0 +1,88 @@
+---
+import Base from '../../layouts/Base.astro';
+import Story from '../../components/Story.astro';
+import { getPostBySlug, getPosts, formatDateTime, plain } from '../../lib/wp';
+import { cachePublic } from '../../lib/http';
+
+const post = await getPostBySlug(Astro.params.slug!);
+if (!post) return Astro.rewrite('/404');
+
+const section = post.categories[0];
+const related = section
+  ? (await getPosts({ category: section.id, perPage: 3, exclude: [post.id] })).posts
+  : [];
+cachePublic(Astro);
+
+const updated = new Date(post.modified).getTime() - new Date(post.date).getTime() > 60 * 60 * 1000;
+---
+
+<Base
+  title={plain(post.title)}
+  description={plain(post.excerpt)}
+  seo={post.seo}
+  publishedTime={post.date}
+  modifiedTime={post.modified}
+>
+  <article class="article">
+    <header class="measure head">
+      {section && <a class="kicker" href={`/${section.slug}`}>{section.name}</a>}
+      <h1 set:html={post.title} />
+      <div class="dek" set:html={post.excerpt} />
+      <div class="byline">
+        <p class="author">Por <strong>{post.author?.name ?? 'Redação'}</strong></p>
+        <p class="dates">
+          <time datetime={post.date}>{formatDateTime(post.date)}</time>
+          {updated && <span> · Atualizado em <time datetime={post.modified}>{formatDateTime(post.modified)}</time></span>}
+          <span> · {post.readingTime} min de leitura</span>
+        </p>
+      </div>
+    </header>
+
+    {post.image && (
+      <figure class="cover">
+        <img
+          src={post.image.url}
+          alt={post.image.alt}
+          width={post.image.width}
+          height={post.image.height}
+          fetchpriority="high"
+        />
+      </figure>
+    )}
+
+    <div class="prose measure" set:html={post.content} />
+  </article>
+
+  {related.length > 0 && (
+    <section class="related" aria-labelledby="leia-tambem">
+      <h2 id="leia-tambem" class="section-title">Leia também</h2>
+      <div class="related-grid">
+        {related.map((p) => <Story post={p} variant="card" showKicker={false} showExcerpt={false} />)}
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .head { margin-bottom: 1.75rem; }
+  h1 {
+    margin: 0.25rem 0 0; font-family: var(--serif);
+    font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.1; letter-spacing: -0.02em;
+  }
+  .dek { color: var(--muted); font-family: var(--serif); font-size: 1.3rem; line-height: 1.45; }
+  .dek :global(p) { margin: 0.9rem 0 0; }
+  .byline {
+    margin-top: 1.5rem; padding-block: 0.9rem;
+    border-block: 1px solid var(--line); font-size: 0.85rem; color: var(--muted);
+  }
+  .byline p { margin: 0; }
+  .author { color: var(--text); font-size: 0.95rem; }
+  .dates { margin-top: 0.2rem !important; }
+
+  .cover { max-width: 60rem; margin: 0 auto 2rem; }
+  .cover img { display: block; width: 100%; }
+
+  .related { max-width: 60rem; margin: 4rem auto 0; }
+  .related-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+  @media (max-width: 40rem) { .related-grid { grid-template-columns: 1fr; } }
+</style>

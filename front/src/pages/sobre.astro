@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../lib/site';
+---
+
+<Base title="Sobre e expediente" description={SITE.description}>
+  <article class="measure">
+    <h1>Sobre {SITE.name}</h1>
+    <div class="prose">
+      <p>
+        <strong>{SITE.name}</strong> é um portal de notícias independente que cobre política, Brasil e mundo.
+        Nossa linha editorial é de esquerda e declarada: acreditamos que todo jornalismo parte de um
+        ponto de vista, e preferimos assumir o nosso a fingir neutralidade.
+      </p>
+      <p>
+        O compromisso é com os fatos, com a checagem das fontes e com quem costuma ficar fora das
+        manchetes. Não temos patrocinadores ditando pauta.
+      </p>
+
+      <h2>Expediente</h2>
+      <p><strong>Editor-responsável:</strong> Samuel Zwinglio</p>
+    </div>
+  </article>
+</Base>
+
+<style>
+  h1 { font-family: var(--serif); font-size: 2.4rem; line-height: 1.1; margin: 0 0 1.5rem; }
+</style>

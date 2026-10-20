@@ -1,0 +1,13 @@
+/* Imagens para redes — painel do editor */
+.farol-social__hint { margin: 0 0 10px; color: #757575; font-size: 12px; }
+.farol-social__preview {
+	display: block; width: 100%; padding: 0; margin: 0 0 10px;
+	border: 1px solid #e0e0e0; border-radius: 2px; background: #f6f7f7; cursor: zoom-in;
+}
+.farol-social__preview:focus-visible { outline: 2px solid var(--wp-admin-theme-color, #3858e9); outline-offset: 2px; }
+.farol-social__canvas { display: block; width: 100%; height: auto; }
+.farol-social__actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.farol-social__focal { margin-top: 16px; }
+.farol-social__notice { margin: 16px 0 0; }
+.farol-social__zoom { display: flex; justify-content: center; margin-bottom: 16px; }
+.farol-social__canvas.is-zoom { width: auto; max-width: 100%; max-height: calc(100vh - 240px); box-shadow: 0 2px 16px rgb(0 0 0 / 15%); }

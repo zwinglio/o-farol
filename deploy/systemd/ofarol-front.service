@@ -1,0 +1,30 @@
+# /etc/systemd/system/ofarol-front.service
+[Unit]
+Description=O Farol — front (Astro + Bun)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ofarol
+Group=ofarol
+WorkingDirectory=/srv/ofarol-front/current
+ExecStart=/usr/local/bin/bun --env-file=/srv/ofarol-front/.env ./dist/server/entry.mjs
+Environment=NODE_ENV=production
+Restart=always
+RestartSec=3
+
+# Endurecimento: só lê o sistema e escreve na própria pasta.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ReadWritePaths=/srv/ofarol-front
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

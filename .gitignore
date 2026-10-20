@@ -1,0 +1,30 @@
+# Segredos
+.env
+.env.*
+!.env.example
+
+# Front (Astro)
+front/node_modules/
+front/dist/
+front/.astro/
+
+# WordPress: conteúdo enviado e arquivos gerados em runtime
+wordpress/wp-content/uploads/
+wordpress/wp-content/upgrade/
+wordpress/wp-content/cache/
+wordpress/wp-content/debug.log
+
+.DS_Store
+.idea/
+.vscode/
+.bin/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
+
+# Dependências de build dos plugins (o build/ compilado é versionado)
+wordpress/wp-content/plugins/*/node_modules/
+
+# Ferramentas locais (configurações do editor/assistente)
+.claude/
+.ignore

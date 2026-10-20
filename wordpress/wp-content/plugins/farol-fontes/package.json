@@ -1,0 +1,12 @@
+{
+  "name": "farol-fontes",
+  "private": true,
+  "description": "Bloco Fonte do O Farol (build do editor).",
+  "scripts": {
+    "build": "wp-scripts build src/index.js --output-path=build",
+    "start": "wp-scripts start src/index.js --output-path=build"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^36.1.0"
+  }
+}

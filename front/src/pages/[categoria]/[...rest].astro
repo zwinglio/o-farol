@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import Listing from '../../components/Listing.astro';
+import { getCategory, getPosts, parsePage, plain } from '../../lib/wp';
+import { cachePublic } from '../../lib/http';
+
+const page = parsePage(Astro.params.rest);
+const category = page === null ? null : await getCategory(Astro.params.categoria!);
+if (page === null || !category) return Astro.rewrite('/404');
+
+const base = `/${category.slug}`;
+if (page === 1 && Astro.params.rest) return Astro.redirect(base, 301);
+
+const data = await getPosts({ page, perPage: 15, category: category.id });
+if (page > 1 && data.posts.length === 0) return Astro.rewrite('/404');
+cachePublic(Astro);
+
+const description = plain(category.description) || undefined;
+---
+
+<Base title={page > 1 ? `${category.name} — página ${page}` : category.name} description={description}>
+  <Listing title={category.name} description={description} data={data} page={page} base={base} showKicker={false} />
+</Base>

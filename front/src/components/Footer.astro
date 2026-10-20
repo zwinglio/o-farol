@@ -1,0 +1,43 @@
+---
+import { SITE } from '../lib/site';
+import { getMenu } from '../lib/wp';
+
+const [principal, institucional] = await Promise.all([getMenu('principal'), getMenu('institucional')]);
+const editorias = principal.filter((l) => l.href !== '/');
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container grid">
+    <div>
+      <p class="brand">{SITE.name}</p>
+      <p class="muted">{SITE.description}</p>
+    </div>
+    <nav aria-label="Editorias">
+      <p class="label">Editorias</p>
+      <ul>
+        {editorias.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+    <nav aria-label="Institucional">
+      <p class="label">Institucional</p>
+      <ul>
+        {institucional.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+  </div>
+  <div class="container legal">© {year} {SITE.name}. Todos os direitos reservados.</div>
+</footer>
+
+<style>
+  .site-footer { margin-top: 4rem; background: var(--soft); border-top: 3px solid var(--text); font-size: 0.9rem; }
+  .grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding-block: 2.5rem 1.5rem; }
+  .brand { margin: 0 0 0.5rem; font-family: var(--serif); font-size: 1.6rem; font-weight: 700; }
+  .muted { margin: 0; color: var(--muted); max-width: 26rem; }
+  .label { margin: 0 0 0.5rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  li + li { margin-top: 0.35rem; }
+  a { text-decoration: none; }
+  .legal { padding-block: 1rem 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; }
+  @media (max-width: 40rem) { .grid { grid-template-columns: 1fr 1fr; } .grid > div { grid-column: 1 / -1; } }
+</style>

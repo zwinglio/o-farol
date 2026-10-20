@@ -1,0 +1,99 @@
+---
+import { SITE } from '../lib/site';
+import { getMenu } from '../lib/wp';
+
+const path = Astro.url.pathname;
+const today = new Intl.DateTimeFormat('pt-BR', {
+  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Sao_Paulo',
+}).format(new Date());
+
+const [principal, institucional] = await Promise.all([getMenu('principal'), getMenu('institucional')]);
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : href.startsWith('/') && (path === href || path.startsWith(`${href}/`));
+const target = (external: boolean) => (external ? { target: '_blank', rel: 'noopener' } : {});
+---
+
+<header class="site-header">
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span class="today">{today}</span>
+      <span class="links">
+        {institucional.map((l) => <a href={l.href} {...target(l.external)}>{l.label}</a>)}
+      </span>
+    </div>
+  </div>
+
+  <div class="container masthead">
+    <a class="brand" href="/" aria-label={`${SITE.name} — capa`}>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M9 22h6l-1-12h-4zM10 8h4l-.5-3h-3zM12 2v1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        <path d="M16 6.5l5-2M16 8.5l5 2M8 6.5l-5-2M8 8.5l-5 2" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+      <span>{SITE.name}</span>
+    </a>
+    <p class="tagline">
+      <span>{SITE.tagline}</span><span class="sep" aria-hidden="true"> — </span><span>{SITE.byline}</span>
+    </p>
+  </div>
+
+  <nav class="sections" aria-label="Editorias">
+    <div class="container">
+      <ul>
+        {principal.map((l) => (
+          <li><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined} {...target(l.external)}>{l.label}</a></li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .site-header { margin-bottom: 2rem; }
+
+  .topbar { background: var(--text); color: #d9dade; font-size: 0.8rem; }
+  .topbar-inner { display: flex; justify-content: space-between; gap: 1rem; padding-block: 0.4rem; }
+  .today::first-letter { text-transform: uppercase; }
+  .links { display: flex; gap: 1rem; white-space: nowrap; }
+  .topbar a { text-decoration: none; }
+  .topbar a:hover { color: #fff; }
+
+  .masthead { text-align: center; padding-block: 1.5rem 1rem; }
+  .brand {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-family: var(--serif); font-weight: 700; font-size: clamp(2.2rem, 7vw, 3.4rem);
+    letter-spacing: -0.02em; line-height: 1; text-decoration: none; color: var(--text);
+  }
+  .brand svg { width: 0.85em; height: 0.85em; }
+  .brand:hover { color: var(--text); }
+  .tagline {
+    margin: 0.4rem 0 0; color: var(--muted);
+    font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+  }
+
+  .sections { border-block: 1px solid var(--line); border-top: 3px solid var(--text); }
+  .sections ul {
+    display: flex; justify-content: center; gap: 0.25rem;
+    margin: 0; padding: 0; list-style: none;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .sections a {
+    display: block; padding: 0.7rem 0.9rem;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    text-decoration: none; white-space: nowrap;
+    border-bottom: 3px solid transparent; margin-bottom: -1px;
+  }
+  .sections a[aria-current='page'] { color: var(--accent); border-bottom-color: var(--accent); }
+
+  @media (max-width: 40rem) {
+    .tagline .sep { display: none; }
+    .tagline span { display: block; }
+    .topbar { font-size: 0.72rem; }
+    .today { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sections ul {
+      justify-content: flex-start; gap: 0; padding-right: 1.5rem;
+      /* esmaece a borda direita para indicar que a barra rola */
+      mask-image: linear-gradient(to right, #000 85%, transparent);
+    }
+    .sections a { padding-inline: 0.55rem; font-size: 0.8rem; }
+  }
+</style>

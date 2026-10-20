@@ -1,0 +1,130 @@
+/*
+ * Bloco "Fonte" (plugin farol-fontes). HTML gerado em
+ * wordpress/wp-content/plugins/farol-fontes/includes/render.php.
+ *
+ * Este arquivo é a fonte da verdade; o editor usa uma cópia em
+ * farol-fontes/assets/fonte.css (`make fontes-css` sincroniza).
+ * Os tokens têm valores de reserva porque o editor não define --sans etc.
+ */
+
+.farol-fonte {
+  --ff-line: var(--line, #e3e4e8);
+  --ff-muted: var(--muted, #5b5e66);
+  --ff-text: var(--text, #16171a);
+  --ff-soft: var(--soft, #f4f4f6);
+  --ff-accent: var(--accent, #c4161c);
+  --ff-brand: var(--ff-text);
+  margin: 2rem 0;
+  font-family: var(--sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-style: normal;
+}
+.farol-fonte--x { --ff-brand: #0f1419; }
+.farol-fonte--bluesky { --ff-brand: #0a7aff; }
+.farol-fonte--mastodon { --ff-brand: #6364ff; }
+.farol-fonte--youtube { --ff-brand: #e00; }
+.farol-fonte--vimeo { --ff-brand: #17d5ff; }
+.farol-fonte--tiktok { --ff-brand: #fe2c55; }
+
+.farol-fonte a { color: inherit; }
+.farol-fonte img { display: block; max-width: 100%; }
+.farol-fonte .screen-reader-text {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ---------- Post (X, Bluesky, Mastodon) ---------- */
+.farol-fonte .farol-fonte__post {
+  max-width: 36rem;
+  margin: 0;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--ff-line);
+  border-top: 3px solid var(--ff-brand);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ff-text);
+  font-style: normal;
+}
+.farol-fonte__author { display: flex; align-items: center; gap: 0.65rem; }
+.farol-fonte .farol-fonte__avatar {
+  flex: none; width: 2.6rem; height: 2.6rem; border-radius: 50%; object-fit: cover; background: var(--ff-soft);
+}
+.farol-fonte__avatar--empty {
+  display: grid; place-items: center; font-weight: 700; color: var(--ff-muted); text-transform: uppercase;
+}
+.farol-fonte__who { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.farol-fonte__who strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.farol-fonte__who span { color: var(--ff-muted); font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.farol-fonte__platform {
+  margin-left: auto; color: var(--ff-brand);
+  font-size: 0.7rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.farol-fonte__text { margin-top: 0.75rem; font-size: 1.02rem; overflow-wrap: anywhere; }
+.farol-fonte__text p { margin: 0; }
+.farol-fonte__text p + p { margin-top: 0.6rem; }
+.farol-fonte__text a { color: var(--ff-brand); text-decoration: none; }
+.farol-fonte .farol-fonte__media {
+  width: 100%; max-height: 28rem; object-fit: cover; margin-top: 0.85rem; border-radius: 4px; border: 1px solid var(--ff-line);
+}
+.farol-fonte__meta { margin-top: 0.85rem; color: var(--ff-muted); font-size: 0.82rem; }
+.farol-fonte__meta a { text-decoration: none; font-weight: 600; }
+.farol-fonte__meta a:hover { color: var(--ff-brand); }
+
+/* ---------- Vídeo (YouTube, Vimeo, TikTok) ---------- */
+.farol-fonte__player {
+  position: relative; display: block; overflow: hidden;
+  width: 100%; background: #000; border-radius: 4px;
+}
+.farol-fonte--tiktok .farol-fonte__player,
+.farol-fonte__player[style*='9 / 16'] { max-width: 22rem; margin-inline: auto; }
+.farol-fonte .farol-fonte__thumb { width: 100%; height: 100%; object-fit: cover; opacity: 0.92; transition: opacity 0.2s; }
+.farol-fonte__thumb--empty { display: block; height: 100%; background: linear-gradient(135deg, #1b1c20, #3a3b42); }
+.farol-fonte__player:hover .farol-fonte__thumb { opacity: 1; }
+.farol-fonte__play {
+  position: absolute; inset: 50% auto auto 50%; translate: -50% -50%;
+  width: 4.25rem; height: 4.25rem; border-radius: 50%;
+  background: var(--ff-brand); box-shadow: 0 4px 18px rgb(0 0 0 / 35%);
+  transition: transform 0.15s;
+}
+.farol-fonte__play::after {
+  content: ''; position: absolute; inset: 0; margin: auto; translate: 0.15rem 0;
+  width: 1.4rem; height: 1.6rem; background: #fff; clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.farol-fonte--vimeo .farol-fonte__play::after { background: #000; }
+.farol-fonte__player:hover .farol-fonte__play { transform: scale(1.06); }
+.farol-fonte__player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.farol-fonte__video-meta { margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--ff-muted); }
+.farol-fonte__video-meta a { color: var(--ff-text); font-weight: 600; text-decoration: none; }
+
+/* ---------- Cartão (sites e veículos) ---------- */
+.farol-fonte .farol-fonte__link {
+  display: flex; align-items: stretch; overflow: hidden;
+  border: 1px solid var(--ff-line); border-radius: 6px; background: #fff;
+  text-decoration: none; color: var(--ff-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.farol-fonte .farol-fonte__link:hover { border-color: #c9cbd1; box-shadow: 0 2px 10px rgb(0 0 0 / 6%); color: var(--ff-text); }
+.farol-fonte__body { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; min-width: 0; padding: 0.9rem 1.1rem; }
+.farol-fonte__site {
+  display: flex; align-items: center; gap: 0.4rem;
+  color: var(--ff-muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.farol-fonte .farol-fonte__icon { width: 1rem; height: 1rem; border-radius: 3px; object-fit: contain; }
+.farol-fonte__title { font-family: var(--serif, Georgia, serif); font-size: 1.12rem; line-height: 1.3; }
+.farol-fonte__link:hover .farol-fonte__title { color: var(--ff-accent); }
+.farol-fonte__desc {
+  color: var(--ff-muted); font-size: 0.9rem;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.farol-fonte__byline { color: var(--ff-muted); font-size: 0.78rem; }
+.farol-fonte .farol-fonte__cover { flex: none; width: 11rem; object-fit: cover; background: var(--ff-soft); }
+
+@media (max-width: 40rem) {
+  .farol-fonte .farol-fonte__link { flex-direction: column-reverse; }
+  .farol-fonte .farol-fonte__cover { width: 100%; aspect-ratio: 1.91 / 1; }
+}
+
+/* ---------- Legenda ---------- */
+.farol-fonte__caption {
+  margin-top: 0.5rem; color: var(--ff-muted); font-size: 0.85rem;
+}
