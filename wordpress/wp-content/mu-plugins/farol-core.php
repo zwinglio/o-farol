@@ -98,6 +98,14 @@ add_action(
 			return;
 		}
 
+		// Atalhos do core (/login, /admin, /dashboard) e /wp-login levam ao painel,
+		// não ao site. Saem daqui com exit quando casam.
+		if ( 'wp-login' === trim( (string) wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ), '/' ) ) {
+			wp_safe_redirect( wp_login_url() );
+			exit;
+		}
+		wp_redirect_admin_locations();
+
 		$target = match ( true ) {
 			is_singular( 'post' ) => get_permalink(),
 			is_feed()             => farol_frontend_url( 'rss.xml' ),
