@@ -6,6 +6,7 @@ import Footer from '../components/Footer.astro';
 import { PUBLIC_SITE_URL } from 'astro:env/client';
 import { SITE } from '../lib/site';
 import { getSiteSeo, jsonLd, type PostSeo } from '../lib/seo';
+import { GA_ID } from 'astro:env/server';
 
 interface Props {
   title?: string;
@@ -31,6 +32,8 @@ const robots = noindex ? 'noindex, follow' : (meta?.robots ?? 'index, follow, ma
 const image = meta?.og.image ?? (site.image ? { url: site.image, width: 1200, height: 630, alt: '' } : null);
 const schemas = [...(seo?.schema ?? []), ...schema];
 const rss = new URL('/rss.xml', PUBLIC_SITE_URL).href;
+// Só IDs no formato do GA4 entram na página.
+const gaId = GA_ID && /^G-[A-Z0-9]{4,20}$/.test(GA_ID) ? GA_ID : null;
 ---
 
 <!doctype html>
@@ -68,6 +71,17 @@ const rss = new URL('/rss.xml', PUBLIC_SITE_URL).href;
     {site.x_handle && <meta name="twitter:site" content={`@${site.x_handle}`} />}
 
     {schemas.map((s) => <script type="application/ld+json" set:html={jsonLd(s)} />)}
+
+    {gaId && <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>}
+    {gaId && (
+      <script is:inline define:vars={{ gaId }}>
+        window.dataLayer = window.dataLayer || [];
+        // Global, para medir eventos de outros scripts no futuro.
+        window.gtag = function gtag() { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', gaId);
+      </script>
+    )}
   </head>
   <body>
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>

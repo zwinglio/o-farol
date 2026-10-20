@@ -31,6 +31,8 @@ export default defineConfig({
       CACHE_MAX_AGE: envField.number({ context: 'server', access: 'secret', default: 60 }),
       // Domínio da mídia (R2). Só necessário se não for https (ex.: testes locais).
       MEDIA_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      // Google Analytics 4 (ex.: G-ZZ2KVRWNEG). Vazio = sem analytics (dev local).
+      GA_ID: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 });
