@@ -48,6 +48,10 @@ function farol_fontes_img( ?array $img, string $class, string $alt = '', string 
 	if ( empty( $img['url'] ) ) {
 		return '';
 	}
+	// Endereço atual do anexo (acompanha a mudança para o R2); a URL gravada é reserva.
+	if ( ! empty( $img['id'] ) && ( $current = wp_get_attachment_url( (int) $img['id'] ) ) ) {
+		$img['url'] = $current;
+	}
 	return sprintf(
 		'<img class="%s" src="%s" alt="%s"%s loading="%s" decoding="async">',
 		esc_attr( $class ),

@@ -112,6 +112,16 @@ define( 'FAROL_CORS_ORIGINS', (string) farol_env( 'FAROL_CORS_ORIGINS', '' ) );
 // Se definida, tem prioridade sobre a chave salva em Configurações → O Farol → IA.
 define( 'FAROL_OPENROUTER_API_KEY', (string) farol_env( 'OPENROUTER_API_KEY', '' ) );
 
+// ** Mídia no Cloudflare R2 (plugin farol-midia). Sem estas variáveis, tudo fica local. ** //
+define( 'FAROL_R2_ACCOUNT_ID', (string) farol_env( 'R2_ACCOUNT_ID', '' ) );
+define( 'FAROL_R2_ACCESS_KEY_ID', (string) farol_env( 'R2_ACCESS_KEY_ID', '' ) );
+define( 'FAROL_R2_SECRET_ACCESS_KEY', (string) farol_env( 'R2_SECRET_ACCESS_KEY', '' ) );
+define( 'FAROL_R2_BUCKET', (string) farol_env( 'R2_BUCKET', '' ) );
+define( 'FAROL_R2_PUBLIC_URL', rtrim( (string) farol_env( 'R2_PUBLIC_URL', '' ), '/' ) );
+define( 'FAROL_R2_KEEP_LOCAL', (bool) farol_env( 'R2_KEEP_LOCAL', true ) );
+// Só para desenvolvimento/testes (ex.: MinIO). Em produção fica vazio.
+define( 'FAROL_R2_ENDPOINT', rtrim( (string) farol_env( 'R2_ENDPOINT', '' ), '/' ) );
+
 // ** Ambiente e depuração ** //
 define( 'WP_ENVIRONMENT_TYPE', farol_env( 'WP_ENVIRONMENT_TYPE', 'production' ) );
 define( 'WP_DEBUG', (bool) farol_env( 'WP_DEBUG', false ) );

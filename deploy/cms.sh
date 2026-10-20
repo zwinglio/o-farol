@@ -44,7 +44,7 @@ say "Conferindo integridade do core"
 
 say "Atualizando banco e plugins"
 "${WP[@]}" core update-db
-"${WP[@]}" plugin activate farol-seo farol-fontes farol-social
+"${WP[@]}" plugin activate farol-seo farol-fontes farol-social farol-midia
 "${WP[@]}" cache flush
 
 if [ -n "$PHP_FPM_SERVICE" ]; then

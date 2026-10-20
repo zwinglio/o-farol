@@ -74,6 +74,19 @@ Plugins próprios ficam em `wp-content/plugins/`:
 | `farol-seo` | SEO e GEO. Detalhes abaixo. |
 | `farol-fontes` | Bloco **Fonte**: cita posts, vídeos e matérias de outros veículos. Detalhes abaixo. |
 | `farol-social` | **Imagens para redes**: artes de feed e stories com título, editoria e foto. Detalhes abaixo. |
+| `farol-midia` | **Mídia no Cloudflare R2**: imagens e vídeos no bucket, servidos pelo CDN; vídeos enviados direto do navegador. Detalhes abaixo. |
+
+### Plugin `farol-midia`: imagens e vídeos no R2
+
+Com as variáveis `R2_*` no `.env` do CMS, cada upload (e todos os tamanhos que o WordPress gera) vai para o bucket, e as URLs passam a apontar para o domínio público dele — na API, no front, no RSS, nas artes para redes e nas imagens do bloco Fonte. Sem as variáveis, nada muda: a mídia fica local.
+
+- **Vídeos:** *Mídia → Enviar vídeo*. O navegador lê duração e dimensões, captura um quadro como capa e envia o arquivo **direto ao R2 em partes de 16 MB** (4 em paralelo, com novas tentativas), sem passar pelo PHP. Até 20 GB. No editor: bloco **Vídeo → Biblioteca de mídia**.
+- **Exclusão:** apagar da biblioteca apaga do bucket.
+- **Cópia local:** `R2_KEEP_LOCAL=true` mantém os arquivos também no servidor; depois de validar, `false` + `wp farol-midia prune-local`.
+- **Comandos:** `wp farol-midia status | test | sync | rewrite-content | prune-local`.
+- **Sem SDK:** a assinatura S3 (SigV4) é própria, testada contra os exemplos oficiais da AWS. `R2_ENDPOINT` permite apontar para um S3 local (ex.: MinIO) em testes.
+
+Passo a passo do Cloudflare (bucket, domínio, CORS e token) em [DEPLOY.md](DEPLOY.md), seção 2.7.
 
 ### Plugin `farol-social`: imagens para redes
 
@@ -88,7 +101,7 @@ No editor do post, o ícone de imagem no topo abre o painel **Imagens para redes
 - **Ações:** *Baixar PNG*, *Copiar* (para colar direto) e ampliar.
 - **Sem foto destacada:** fundo escuro com o farol.
 - **Novo formato:** basta acrescentar em `FORMATS`, em `assets/editor.js`. Descrição e hashtags com IA entram depois, no objeto `texts`.
-- **Quando as imagens forem para o S3/CDN,** o bucket precisa liberar CORS para o domínio do CMS. Sem isso, o navegador bloqueia exportar o canvas.
+- **Com a mídia no R2,** o bucket precisa liberar CORS para o domínio do CMS (DEPLOY.md, seção 2.7). Sem isso, o navegador bloqueia exportar o canvas.
 
 ### Plugin `farol-fontes`: bloco Fonte
 
@@ -209,7 +222,6 @@ Ver **[DEPLOY.md](DEPLOY.md)**.
 
 ## Próximos passos
 
-- [ ] **S3 para mídia** (imagens agora, vídeos depois): plugin de offload em `wp-content/plugins/`, credenciais `S3_*` já reservadas no `.env.example` do CMS e CDN na frente do bucket.
 - [ ] Pré-visualização de rascunhos no front (Application Passwords).
 - [ ] Envio do formulário de contato.
 - [ ] Páginas de categoria e autor, RSS e sitemap no front.

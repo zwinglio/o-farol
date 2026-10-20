@@ -94,7 +94,7 @@ setup: env $(WP_CLI_PHAR) install ## Instala o WordPress local e o front (após 
 			--admin_email=$(ADMIN_EMAIL) --locale=pt_BR --skip-email; \
 	fi
 	@$(WP) theme activate farol-headless
-	@$(WP) plugin activate farol-seo farol-fontes farol-social --quiet
+	@$(WP) plugin activate farol-seo farol-fontes farol-social farol-midia --quiet
 	@$(WP) rewrite structure '/%postname%/' --quiet
 	@$(WP) option update timezone_string America/Sao_Paulo --quiet
 	@$(WP) user update $(ADMIN_USER) --display_name="Samuel Zwinglio" --first_name=Samuel --last_name=Zwinglio --quiet
@@ -195,7 +195,7 @@ start: build ## Roda o build do front com Bun (como em produção)
 
 .PHONY: lint
 lint: ## Checa a sintaxe do PHP do projeto
-	@for f in $(WP_DIR)/wp-config.php $(WP_DIR)/wp-content/mu-plugins/*.php $(WP_DIR)/wp-content/mu-plugins/farol-core/*.php $(WP_DIR)/wp-content/themes/farol-headless/*.php $(WP_DIR)/wp-content/plugins/farol-seo/*.php $(WP_DIR)/wp-content/plugins/farol-seo/includes/*.php $(WP_DIR)/wp-content/plugins/farol-fontes/*.php $(WP_DIR)/wp-content/plugins/farol-fontes/includes/*.php $(WP_DIR)/wp-content/plugins/farol-social/*.php scripts/*.php; do \
+	@for f in $(WP_DIR)/wp-config.php $(WP_DIR)/wp-content/mu-plugins/*.php $(WP_DIR)/wp-content/mu-plugins/farol-core/*.php $(WP_DIR)/wp-content/themes/farol-headless/*.php $(WP_DIR)/wp-content/plugins/farol-seo/*.php $(WP_DIR)/wp-content/plugins/farol-seo/includes/*.php $(WP_DIR)/wp-content/plugins/farol-fontes/*.php $(WP_DIR)/wp-content/plugins/farol-fontes/includes/*.php $(WP_DIR)/wp-content/plugins/farol-social/*.php $(WP_DIR)/wp-content/plugins/farol-midia/*.php $(WP_DIR)/wp-content/plugins/farol-midia/includes/*.php scripts/*.php; do \
 		$(PHP) -l $$f >/dev/null || exit 1; \
 	done
 	@echo "✓ PHP ok"

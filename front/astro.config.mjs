@@ -29,6 +29,8 @@ export default defineConfig({
       WP_API_URL: envField.string({ context: 'server', access: 'secret', url: true }),
       WP_API_TIMEOUT_MS: envField.number({ context: 'server', access: 'secret', default: 8000 }),
       CACHE_MAX_AGE: envField.number({ context: 'server', access: 'secret', default: 60 }),
+      // Domínio da mídia (R2). Só necessário se não for https (ex.: testes locais).
+      MEDIA_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 });

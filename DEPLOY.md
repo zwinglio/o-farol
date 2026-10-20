@@ -298,6 +298,62 @@ Dica: guarde isso num alias no `~/.bashrc` (`alias deploy-front='cd ~/o-farol &&
 
 ---
 
+## 2.7 Mídia no Cloudflare R2 (plugin `farol-midia`)
+
+Imagens e vídeos passam a morar no R2, servidos pelo CDN do Cloudflare num domínio próprio (ex.: `midia-ofarol.zwinglio.com`). Vídeos vão do navegador direto ao R2, em partes: não passam pelo PHP nem pelo limite de upload.
+
+### No Cloudflare
+
+1. **R2 → Create bucket**: `ofarol-midia`.
+2. **Bucket → Settings → Custom Domains → Connect Domain**: `midia-ofarol.zwinglio.com` (o domínio precisa estar na mesma conta Cloudflare).
+3. **Bucket → Settings → CORS Policy → Add/Edit**, cole:
+
+```json
+[
+  {
+    "AllowedOrigins": ["https://cms-farol.zwinglio.com"],
+    "AllowedMethods": ["GET", "HEAD", "PUT"],
+    "AllowedHeaders": ["*"],
+    "ExposeHeaders": ["ETag"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+`PUT` + `ExposeHeaders: ETag` são o que permite o envio de vídeo pelo navegador; `GET` libera as *Imagens para redes* (o painel desenha a foto num canvas).
+
+4. **R2 → Manage API tokens → Create API token**: permissão **Object Read & Write**, **Apply to specific buckets only** → `ofarol-midia`. Anote *Access Key ID*, *Secret Access Key* e o *Account ID* (aparece na página do R2).
+
+### No CMS
+
+```bash
+cd ~/htdocs/cms-farol.zwinglio.com
+PHP=php8.5 ./deploy/cms.sh          # traz e ativa o farol-midia
+nano .env                           # preencha o bloco R2_*:
+#   R2_ACCOUNT_ID=…  R2_ACCESS_KEY_ID=…  R2_SECRET_ACCESS_KEY="…"
+#   R2_BUCKET=ofarol-midia
+#   R2_PUBLIC_URL=https://midia-ofarol.zwinglio.com
+#   R2_KEEP_LOCAL=true
+
+alias wp="php8.5 $PWD/.bin/wp-cli-nightly.phar --path=$PWD/wordpress"
+wp farol-midia test               # grava, lê pelo domínio, confere CORS e apaga
+wp farol-midia sync               # envia o que já existe
+wp farol-midia rewrite-content    # troca URLs antigas dentro dos textos (use --dry-run antes)
+```
+
+O mesmo teste existe em **Configurações → O Farol → Mídia → Testar conexão**. Vídeos: **Mídia → Enviar vídeo**; no editor, bloco **Vídeo → Biblioteca de mídia**.
+
+### Depois de validar: apagar as cópias locais
+
+```bash
+nano .env                            # R2_KEEP_LOCAL=false (uploads novos não guardam cópia)
+wp farol-midia prune-local           # apaga as cópias antigas do que já está no R2
+```
+
+O editor de imagens do WordPress continua funcionando: sem o arquivo local, ele lê do R2. O backup de `uploads/` (seção 5) deixa de ser necessário; o do banco continua.
+
+---
+
 ## 3. Depois do primeiro deploy
 
 - [ ] **Configurações → O Farol → SEO e GEO**: descrição, logo, imagem social padrão, perfis oficiais, política para robôs de IA.
@@ -385,5 +441,6 @@ Copie `~/backups` para fora do VPS, por exemplo com `rclone` para um bucket. Qua
 | Formulário de contato dá 403 | `PUBLIC_SITE_URL` diferente do domínio acessado (rebuild após mudar) |
 | Post agendado não sai | Cron do passo 1.7 ausente |
 | Painel mostra a versão antiga de um plugin após deploy | OPcache: espere alguns segundos ou `sudo systemctl reload php8.3-fpm` (no CloudPanel, *PHP Settings → Restart*) |
-| Imagens para redes deixam de exportar após o S3 | O bucket precisa de CORS liberando `https://cms.ofarol.com.br` |
+| Imagens para redes não exportam / envio de vídeo falha com "ETag" ou "CORS" | Política de CORS do bucket (seção 2.7): origem do CMS, métodos `GET, HEAD, PUT` e `ExposeHeaders: ETag` |
+| `wp farol-midia test` falha em "Ler pelo domínio público" | Custom Domain do bucket não conectado ou `R2_PUBLIC_URL` diferente dele |
 | `deploy/cms.sh` diz "Há alterações locais" | Alguém editou arquivos no servidor: `git diff` para ver e `git checkout -- .` para descartar |
