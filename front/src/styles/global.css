@@ -136,3 +136,37 @@ a.kicker:hover { color: var(--accent-dark); }
 .prose th, .prose td { border-bottom: 1px solid var(--line); padding: 0.5em; text-align: left; }
 .prose .wp-block-embed__wrapper iframe, .prose iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; }
 .prose .aligncenter { margin-inline: auto; }
+
+/* Galeria e colunas: o front não carrega o CSS de blocos do WordPress. */
+.prose .wp-block-gallery { --gap: 0.5rem; display: flex; flex-wrap: wrap; gap: var(--gap); align-items: stretch; }
+.prose .wp-block-gallery > .wp-block-image {
+  display: flex; flex-direction: column; justify-content: center;
+  flex-grow: 1; margin: 0; width: calc(50% - var(--gap) / 2);
+}
+.prose .wp-block-gallery > .wp-block-image img { width: 100%; }
+.prose .wp-block-gallery.is-cropped > .wp-block-image img { flex: 1 0 0%; height: 100%; object-fit: cover; }
+.prose .wp-block-gallery > .wp-block-image figcaption { margin-top: 0.35em; }
+.prose .wp-block-gallery > .blocks-gallery-caption { flex-basis: 100%; margin-top: 0; }
+@media (min-width: 600px) {
+  .prose .wp-block-gallery.columns-default > .wp-block-image,
+  .prose .wp-block-gallery.columns-3 > .wp-block-image { width: calc(33.333% - var(--gap) * 2 / 3); }
+  .prose .wp-block-gallery.columns-default > .wp-block-image:first-child:nth-last-child(2),
+  .prose .wp-block-gallery.columns-default > .wp-block-image:first-child:nth-last-child(2) ~ .wp-block-image { width: calc(50% - var(--gap) / 2); }
+  .prose .wp-block-gallery.columns-default > .wp-block-image:only-child,
+  .prose .wp-block-gallery.columns-1 > .wp-block-image { width: 100%; }
+  .prose .wp-block-gallery.columns-4 > .wp-block-image { width: calc(25% - var(--gap) * 3 / 4); }
+}
+
+.prose .wp-block-columns { display: flex; flex-direction: column; gap: 1.25em; }
+.prose .wp-block-column { min-width: 0; }
+.prose .wp-block-column > * { margin: 0; }
+.prose .wp-block-column > * + * { margin-top: 1em; }
+@media (min-width: 600px) {
+  .prose .wp-block-columns { flex-direction: row; gap: 1.5em; }
+  .prose .wp-block-column { flex: 1 1 0; }
+  .prose .wp-block-column[style*='flex-basis'] { flex-grow: 0; }
+  .prose .wp-block-columns.are-vertically-aligned-center { align-items: center; }
+  .prose .wp-block-columns.are-vertically-aligned-bottom { align-items: flex-end; }
+  .prose .wp-block-column.is-vertically-aligned-center { align-self: center; }
+  .prose .wp-block-column.is-vertically-aligned-bottom { align-self: flex-end; }
+}
