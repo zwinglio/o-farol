@@ -6,13 +6,16 @@
 # acontece antes da troca, o link "current" muda de uma vez e, se o site não
 # responder, volta sozinho para a release anterior.
 #
-# Variáveis opcionais: FRONT_BASE (/srv/ofarol-front), FRONT_SERVICE (ofarol-front),
-# KEEP_RELEASES (3), BRANCH (main).
+# Variáveis opcionais:
+#   FRONT_BASE     pasta das releases e do .env (padrão /srv/ofarol-front)
+#   FRONT_RESTART  comando que reinicia o app (padrão: sudo systemctl restart ofarol-front)
+#                  CloudPanel/pm2: FRONT_RESTART="pm2 restart ofarol-front"
+#   KEEP_RELEASES  (3) · BRANCH (main)
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 BASE="${FRONT_BASE:-/srv/ofarol-front}"
-SERVICE="${FRONT_SERVICE:-ofarol-front}"
+RESTART="${FRONT_RESTART:-sudo systemctl restart ofarol-front}"
 KEEP="${KEEP_RELEASES:-3}"
 BRANCH="${BRANCH:-main}"
 BUN="${BUN:-$(command -v bun || true)}"
@@ -43,7 +46,7 @@ PREVIOUS="$(readlink -f "$BASE/current" 2>/dev/null || true)"
 
 say "Publicando"
 ln -sfn "$RELEASE" "$BASE/current"
-sudo systemctl restart "$SERVICE"
+$RESTART
 
 say "Teste de saúde"
 ok=0
@@ -56,7 +59,8 @@ if [ "$ok" != 1 ]; then
   if [ -n "$PREVIOUS" ] && [ -d "$PREVIOUS" ]; then
     echo "  Voltando para $(basename "$PREVIOUS")."
     ln -sfn "$PREVIOUS" "$BASE/current"
-    sudo systemctl restart "$SERVICE"
+    $RESTART
+    rm -rf "$RELEASE"
   fi
   exit 1
 fi

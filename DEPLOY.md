@@ -262,6 +262,43 @@ O nginx repassa `Host`, `X-Forwarded-Host` e `X-Forwarded-Proto`. O Astro só co
 sudo -u ofarol /srv/ofarol/deploy/front.sh
 ```
 
+### 2.6 Variante: CloudPanel
+
+O front pode ficar no mesmo servidor do CMS, como **outro site** (outro usuário de sistema, isolado do CMS).
+
+1. **Add Site → Create a Node.js Site.** Domínio `farol.zwinglio.com`, qualquer Node.js LTS (só serve para o pm2) e *App Port* `3000`. Anote o usuário do site (ex.: `farol`). Depois, aba *SSL/TLS → Let's Encrypt*.
+2. **Como o usuário do site** (`ssh farol@servidor`):
+
+```bash
+# Bun e pm2
+curl -fsSL https://bun.sh/install | bash && source ~/.bashrc
+npm install -g pm2
+
+# Código: só front/ e deploy/
+git clone --filter=blob:none --no-checkout https://github.com/zwinglio/o-farol.git ~/o-farol
+cd ~/o-farol && git sparse-checkout set --cone front deploy && git checkout main
+
+# Releases e .env FORA de htdocs
+mkdir -p ~/front/releases
+cp front/.env.example ~/front/.env && chmod 600 ~/front/.env
+nano ~/front/.env    # PUBLIC_SITE_URL, WP_API_URL, HOST=127.0.0.1, PORT=3000 (a App Port)
+
+# Primeira release (falha no fim por não haver app para reiniciar ainda; tudo bem)
+FRONT_BASE=~/front FRONT_RESTART=true ./deploy/front.sh || true
+
+# Sobe o app no pm2 e grava a lista
+pm2 start ~/front/current/dist/server/entry.mjs --name ofarol-front \
+  --interpreter ~/.bun/bin/bun --interpreter-args "--env-file=$HOME/front/.env"
+pm2 save
+```
+
+3. **Aba *Cron Jobs*** do site do front: `@reboot` com o comando `$(which pm2) resurrect` (cole o caminho completo que o `which pm2` mostrar). Assim o app volta sozinho depois de um reboot.
+4. **Deploys seguintes:**
+
+```bash
+cd ~/o-farol && FRONT_BASE=~/front FRONT_RESTART="pm2 restart ofarol-front" ./deploy/front.sh
+```
+
 ---
 
 ## 3. Depois do primeiro deploy
@@ -299,7 +336,7 @@ sudo -u ofarol /srv/ofarol/deploy/front.sh
   ln -sfn /srv/ofarol-front/releases/<anterior> /srv/ofarol-front/current
   sudo systemctl restart ofarol-front
   ```
-  O `deploy/front.sh` já faz isso sozinho se a release nova não responder.
+  O `deploy/front.sh` já faz isso sozinho se a release nova não responder. No CloudPanel, troque o `systemctl restart` por `pm2 restart ofarol-front`.
 - **Voltar o CMS:** `git revert` do commit problemático, push e `./deploy/cms.sh`.
 
 ---
