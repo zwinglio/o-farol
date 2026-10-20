@@ -116,6 +116,8 @@ alias wp='php /srv/ofarol/.bin/wp-cli.phar --path=/srv/ofarol/wordpress'
 
 wp core install --url=https://cms.ofarol.com.br --title="O Farol" --locale=pt_BR --skip-email \
   --admin_user=SEU_USUARIO --admin_email=voce@exemplo.com --prompt=admin_password
+# A instalação cria "Olá, mundo!" e "Página de exemplo": sem isto, o "Olá, mundo!" vira a manchete do site.
+wp post delete $(wp post list --post_type=post,page --post_status=any --format=ids) --force
 wp theme activate farol-headless
 wp plugin activate farol-seo farol-fontes farol-social
 wp rewrite structure '/%postname%/'
@@ -146,6 +148,8 @@ echo 'ofarol ALL=(root) NOPASSWD: /usr/bin/systemctl reload php8.3-fpm' | sudo t
 sudo chmod 440 /etc/sudoers.d/ofarol-cms
 ```
 
+E rode o deploy com `PHP_FPM_SERVICE=php8.3-fpm ./deploy/cms.sh`. Sem a variável, o script não recarrega o PHP-FPM; o OPcache revalida os arquivos sozinho a cada ~2 s.
+
 ### 1.9 Firewall
 
 ```bash
@@ -157,8 +161,48 @@ O MariaDB escuta só em `127.0.0.1` (padrão do Ubuntu): não abra a porta 3306.
 ### 1.10 Primeiro deploy
 
 ```bash
-sudo -u ofarol /srv/ofarol/deploy/cms.sh
+sudo -u ofarol PHP_FPM_SERVICE=php8.3-fpm /srv/ofarol/deploy/cms.sh
 ```
+
+### 1.11 Variante: CloudPanel
+
+Com o CloudPanel, os passos 1.1, 1.5, 1.8 e 1.9 são feitos pelo painel. O resto muda assim:
+
+| Item | No CloudPanel |
+|---|---|
+| Site | *Add Site → Create a PHP Site*, PHP 8.3+ (testado até 8.5) |
+| Usuário | O usuário do site (ex.: `cms-farol`); ele não tem `sudo` |
+| Código | Clone em `~/htdocs/<domínio>` (ver abaixo) |
+| Pasta pública | *Settings → Root Directory*: `htdocs/<domínio>/wordpress` |
+| `.env` | `~/htdocs/<domínio>/.env`, fora da pasta pública |
+| Banco | Aba *Databases* do site |
+| HTTPS | Aba *SSL/TLS → Let's Encrypt* |
+| Cron | Aba *Cron Jobs* do site (comando do passo 1.7, com `php8.5` se for o caso) |
+| nginx | Aba *Vhost* (ver regras abaixo) |
+| Deploy | `PHP=php8.5 ./deploy/cms.sh` (com o binário do PHP da versão do site) |
+
+Clonando só o necessário (a pasta `front/` fica de fora):
+
+```bash
+cd ~/htdocs/<domínio>          # precisa estar vazia
+git clone --filter=blob:none --no-checkout https://github.com/zwinglio/o-farol.git .
+git sparse-checkout set --cone wordpress deploy scripts
+git checkout main
+```
+
+Regras para colar no *Vhost*, dentro do bloco `server { … }` que atende o 443, antes do `location /`:
+
+```nginx
+location ~ /\.(?!well-known) { deny all; }
+location ~* \.(log|sql|sh|bak|md)$ { deny all; }
+location ~* ^/(wp-config\.php|wp-config-sample\.php|readme\.html|license\.txt)$ { deny all; }
+location = /xmlrpc.php { deny all; }
+location ~* ^/wp-content/uploads/.*\.(php|phtml|phar)$ { deny all; }
+location ~* ^/wp-content/plugins/[^/]+/(src|node_modules)/ { deny all; }
+location ~* ^/wp-content/plugins/[^/]+/(package\.json|bun\.lock)$ { deny all; }
+```
+
+O limite de tentativas de login do `deploy/nginx/cms.conf` exige acesso root ao nginx. No CloudPanel, use o *Basic Auth* do painel ou um plugin de limite de login.
 
 ---
 
@@ -227,6 +271,7 @@ sudo -u ofarol /srv/ofarol/deploy/front.sh
 - [ ] **Aparência → Menus**: conferir *Principal* e *Institucional*.
 - [ ] **Google Search Console** e **Bing Webmaster**: verificar o domínio e enviar `https://ofarol.com.br/sitemap.xml` e `/news-sitemap.xml`.
 - [ ] Publicar um post de teste **agendado** para daqui a 5 minutos e confirmar que ele sai (testa o cron).
+- [ ] A primeira notícia publicada vira a manchete; enquanto houver menos de 3 outras, a capa mostra o bloco "Sobre O Farol" ao lado. Use *Fixar no topo do blog* para escolher a manchete.
 - [ ] Conferir:
   ```bash
   curl -sI https://ofarol.com.br | grep -iE 'strict|content-security'
@@ -305,6 +350,6 @@ Copie `~/backups` para fora do VPS, por exemplo com `rclone` para um bucket. Qua
 | Front mostra "Estamos com instabilidade" | Front não alcança `WP_API_URL`. Teste da máquina do front: `curl https://cms.ofarol.com.br/wp-json/wp/v2/posts?per_page=1` |
 | Formulário de contato dá 403 | `PUBLIC_SITE_URL` diferente do domínio acessado (rebuild após mudar) |
 | Post agendado não sai | Cron do passo 1.7 ausente |
-| Painel mostra a versão antiga de um plugin após deploy | OPcache: `sudo systemctl reload php8.3-fpm` |
+| Painel mostra a versão antiga de um plugin após deploy | OPcache: espere alguns segundos ou `sudo systemctl reload php8.3-fpm` (no CloudPanel, *PHP Settings → Restart*) |
 | Imagens para redes deixam de exportar após o S3 | O bucket precisa de CORS liberando `https://cms.ofarol.com.br` |
 | `deploy/cms.sh` diz "Há alterações locais" | Alguém editou arquivos no servidor: `git diff` para ver e `git checkout -- .` para descartar |

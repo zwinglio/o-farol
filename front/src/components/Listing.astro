@@ -16,7 +16,7 @@ const { title, description, data, page, base, showKicker = true } = Astro.props;
   </header>
 
   {data.posts.length === 0 ? (
-    <p class="empty">Nenhuma notícia publicada aqui ainda.</p>
+    <p class="empty">Nenhuma notícia publicada aqui ainda. <a href="/ultimas">Veja as últimas notícias →</a></p>
   ) : (
     <>
       {data.posts.map((post, i) => (

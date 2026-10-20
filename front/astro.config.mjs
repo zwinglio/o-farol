@@ -24,9 +24,11 @@ export default defineConfig({
   env: {
     schema: {
       PUBLIC_SITE_URL: envField.string({ context: 'client', access: 'public', url: true }),
-      WP_API_URL: envField.string({ context: 'server', access: 'public', url: true }),
-      WP_API_TIMEOUT_MS: envField.number({ context: 'server', access: 'public', default: 8000 }),
-      CACHE_MAX_AGE: envField.number({ context: 'server', access: 'public', default: 60 }),
+      // "secret" = lidas do ambiente a cada execução (trocar o .env + reiniciar basta).
+      // As "public" de servidor seriam gravadas no código durante o build.
+      WP_API_URL: envField.string({ context: 'server', access: 'secret', url: true }),
+      WP_API_TIMEOUT_MS: envField.number({ context: 'server', access: 'secret', default: 8000 }),
+      CACHE_MAX_AGE: envField.number({ context: 'server', access: 'secret', default: 60 }),
     },
   },
 });

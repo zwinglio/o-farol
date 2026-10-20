@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Story from '../components/Story.astro';
 import { getPosts, getCategories, getMenu, type Post } from '../lib/wp';
 import { getSiteSeo } from '../lib/seo';
+import { SITE } from '../lib/site';
 import { cachePublic } from '../lib/http';
 
 const [{ posts: latest }, { posts: pinned }, categories, menu, site] = await Promise.all([
@@ -32,6 +33,10 @@ const sections = await Promise.all(
     }),
 );
 
+const filledSections = sections.filter((s) => s.posts.length > 0);
+// Começo do site (poucas notícias): a coluna lateral apresenta o projeto em vez de ficar vazia.
+const showAbout = recent.length < 3;
+
 cachePublic(Astro);
 ---
 
@@ -42,20 +47,31 @@ cachePublic(Astro);
     <p class="empty">Nenhuma notícia publicada ainda.</p>
   ) : (
     <>
-      <section class="top" aria-label="Destaques">
+      <section class:list={['top', { 'has-sections': filledSections.length > 0 }]} aria-label="Destaques">
         <div class="lead-col">
           <Story post={lead} variant="lead" headingLevel="h2" />
         </div>
-        {recent.length > 0 && (
-          <aside class="latest" aria-labelledby="ultimas-titulo">
-            <h2 id="ultimas-titulo" class="section-title"><a href="/ultimas">Últimas</a></h2>
-            {recent.map((post) => <Story post={post} variant="compact" />)}
-            <a class="more" href="/ultimas">Todas as notícias →</a>
-          </aside>
-        )}
+        <aside class="latest">
+          {recent.length > 0 && (
+            <section aria-labelledby="ultimas-titulo">
+              <h2 id="ultimas-titulo" class="section-title"><a href="/ultimas">Últimas</a></h2>
+              {recent.map((post) => <Story post={post} variant="compact" />)}
+              <a class="more" href="/ultimas">Todas as notícias →</a>
+            </section>
+          )}
+          {showAbout && (
+            <section class="about" aria-labelledby="sobre-titulo">
+              <h2 id="sobre-titulo" class="section-title">Sobre</h2>
+              <p class="about-name">{SITE.name}</p>
+              <p class="about-text">{SITE.description}</p>
+              <p class="about-by">{SITE.tagline} · {SITE.byline}</p>
+              <a class="more" href="/sobre">Conheça o projeto →</a>
+            </section>
+          )}
+        </aside>
       </section>
 
-      {sections.filter((s) => s.posts.length > 0).map((section) => (
+      {filledSections.map((section) => (
         <section class="section" aria-labelledby={`secao-${section.slug}`}>
           <h2 id={`secao-${section.slug}`} class="section-title"><a href={`/${section.slug}`}>{section.name}</a></h2>
           <div class="section-grid">
@@ -69,11 +85,17 @@ cachePublic(Astro);
 </Base>
 
 <style>
-  .top {
-    display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 2.5rem;
-    padding-bottom: 2.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--line);
-  }
+  .top { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 2.5rem; }
+  .top.has-sections { padding-bottom: 2.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--line); }
+  .latest { display: grid; gap: 2.5rem; align-content: start; }
   .latest :global(.compact:last-of-type) { border-bottom: 0; }
+
+  .about { padding: 1.25rem 1.25rem 1.4rem; background: var(--soft); border-top: 3px solid var(--accent); }
+  .about .section-title { margin-bottom: 0.9rem; }
+  .about .section-title::after { display: none; }
+  .about-name { margin: 0; font-family: var(--serif); font-size: 1.5rem; font-weight: 700; }
+  .about-text { margin: 0.5rem 0 0; font-family: var(--serif); line-height: 1.5; }
+  .about-by { margin: 0.75rem 0 0; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; }
 
   .section + .section { margin-top: 3rem; }
   .section-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; }
