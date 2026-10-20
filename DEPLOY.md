@@ -283,21 +283,18 @@ mkdir -p ~/front/releases
 cp front/.env.example ~/front/.env && chmod 600 ~/front/.env
 nano ~/front/.env    # PUBLIC_SITE_URL, WP_API_URL, HOST=127.0.0.1, PORT=3000 (a App Port)
 
-# Primeira release (falha no fim por não haver app para reiniciar ainda; tudo bem)
-FRONT_BASE=~/front FRONT_RESTART=true ./deploy/front.sh || true
-
-# Sobe o app no pm2 e grava a lista
-pm2 start ~/front/current/dist/server/entry.mjs --name ofarol-front \
-  --interpreter ~/.bun/bin/bun --interpreter-args "--env-file=$HOME/front/.env"
-pm2 save
+# Primeiro deploy: compila, publica e sobe o app no pm2
+FRONT_BASE=~/front FRONT_RESTART="pm2 startOrRestart ~/o-farol/deploy/pm2.config.cjs && pm2 save" ./deploy/front.sh
 ```
 
 3. **Aba *Cron Jobs*** do site do front: `@reboot` com o comando `$(which pm2) resurrect` (cole o caminho completo que o `which pm2` mostrar). Assim o app volta sozinho depois de um reboot.
-4. **Deploys seguintes:**
+4. **Deploys seguintes:** o mesmo comando do primeiro.
 
 ```bash
-cd ~/o-farol && FRONT_BASE=~/front FRONT_RESTART="pm2 restart ofarol-front" ./deploy/front.sh
+cd ~/o-farol && FRONT_BASE=~/front FRONT_RESTART="pm2 startOrRestart ~/o-farol/deploy/pm2.config.cjs && pm2 save" ./deploy/front.sh
 ```
+
+Dica: guarde isso num alias no `~/.bashrc` (`alias deploy-front='cd ~/o-farol && FRONT_BASE=…'`).
 
 ---
 

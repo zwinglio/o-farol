@@ -8,8 +8,8 @@
 #
 # Variáveis opcionais:
 #   FRONT_BASE     pasta das releases e do .env (padrão /srv/ofarol-front)
-#   FRONT_RESTART  comando que reinicia o app (padrão: sudo systemctl restart ofarol-front)
-#                  CloudPanel/pm2: FRONT_RESTART="pm2 restart ofarol-front"
+#   FRONT_RESTART  comando (shell) que (re)inicia o app (padrão: sudo systemctl restart ofarol-front)
+#                  CloudPanel/pm2: FRONT_RESTART="pm2 startOrRestart ~/o-farol/deploy/pm2.config.cjs && pm2 save"
 #   KEEP_RELEASES  (3) · BRANCH (main)
 set -euo pipefail
 
@@ -42,11 +42,13 @@ cd "$RELEASE"
 "$BUN" install --frozen-lockfile
 "$BUN" run build
 
-PREVIOUS="$(readlink -f "$BASE/current" 2>/dev/null || true)"
+# Release anterior (só se "current" já existir como link: no primeiro deploy não há).
+PREVIOUS=""
+if [ -L "$BASE/current" ]; then PREVIOUS="$(readlink -f "$BASE/current")"; fi
 
 say "Publicando"
 ln -sfn "$RELEASE" "$BASE/current"
-$RESTART
+bash -c "$RESTART"
 
 say "Teste de saúde"
 ok=0
@@ -56,11 +58,13 @@ for _ in $(seq 1 15); do
 done
 if [ "$ok" != 1 ]; then
   echo "✗ O site não respondeu."
-  if [ -n "$PREVIOUS" ] && [ -d "$PREVIOUS" ]; then
+  if [ -n "$PREVIOUS" ] && [ -d "$PREVIOUS" ] && [ "$PREVIOUS" != "$RELEASE" ]; then
     echo "  Voltando para $(basename "$PREVIOUS")."
     ln -sfn "$PREVIOUS" "$BASE/current"
-    $RESTART
+    bash -c "$RESTART"
     rm -rf "$RELEASE"
+  else
+    echo "  Não há release anterior para voltar; a nova continua em $BASE/current."
   fi
   exit 1
 fi
