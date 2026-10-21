@@ -21,7 +21,6 @@ export const FALLBACK_MENUS: Record<string, MenuItem[]> = {
     item('Início', '/'),
     item('Últimas', '/ultimas'),
     item('Política', '/politica', 'politica'),
-    item('Parnamirim', '/parnamirim', 'parnamirim'),
     item('Brasil', '/brasil', 'brasil'),
     item('Mundo', '/mundo', 'mundo'),
     item('Tecnologia', '/tecnologia', 'tecnologia'),

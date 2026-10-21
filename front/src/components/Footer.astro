@@ -10,7 +10,13 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="container grid">
     <div>
-      <p class="brand">{SITE.name}</p>
+      <p class="brand">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 22h6l-1-12h-4zM10 8h4l-.5-3h-3zM12 2v1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M16 6.5l5-2M16 8.5l5 2M8 6.5l-5-2M8 8.5l-5 2" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+        <span>{SITE.name}</span>
+      </p>
       <p class="muted">{SITE.description}</p>
     </div>
     <nav aria-label="Editorias">
@@ -32,7 +38,11 @@ const year = new Date().getFullYear();
 <style>
   .site-footer { margin-top: 4rem; background: var(--soft); border-top: 3px solid var(--text); font-size: 0.9rem; }
   .grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding-block: 2.5rem 1.5rem; }
-  .brand { margin: 0 0 0.5rem; font-family: var(--serif); font-size: 1.6rem; font-weight: 700; }
+  .brand {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin: 0 0 0.5rem; font-family: var(--serif); font-size: 1.6rem; font-weight: 700;
+  }
+  .brand svg { width: 0.85em; height: 0.85em; flex: none; }
   .muted { margin: 0; color: var(--muted); max-width: 26rem; }
   .label { margin: 0 0 0.5rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
   ul { margin: 0; padding: 0; list-style: none; }

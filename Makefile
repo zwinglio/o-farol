@@ -138,7 +138,7 @@ menus: categories ## Cria os menus Principal e Institucional (só se ainda não 
 		m=$$($(WP) menu create "Principal" --porcelain); \
 		$(WP) menu item add-custom $$m "Início" "/" --quiet; \
 		$(WP) menu item add-custom $$m "Últimas" "/ultimas" --quiet; \
-		for s in politica parnamirim brasil mundo tecnologia; do \
+		for s in politica brasil mundo tecnologia; do \
 			$(WP) menu item add-term $$m category $$($(WP) term get category $$s --by=slug --field=term_id) --quiet; \
 		done; \
 		$(WP) menu location assign $$m principal; \
