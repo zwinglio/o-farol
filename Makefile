@@ -94,7 +94,7 @@ setup: env $(WP_CLI_PHAR) install ## Instala o WordPress local e o front (após 
 			--admin_email=$(ADMIN_EMAIL) --locale=pt_BR --skip-email; \
 	fi
 	@$(WP) theme activate farol-headless
-	@$(WP) plugin activate farol-seo farol-fontes farol-social farol-midia --quiet
+	@$(WP) plugin activate farol-seo farol-fontes farol-social farol-midia farol-newsletter --quiet
 	@$(WP) rewrite structure '/%postname%/' --quiet
 	@$(WP) option update timezone_string America/Sao_Paulo --quiet
 	@$(WP) user update $(ADMIN_USER) --display_name="Samuel Zwinglio" --first_name=Samuel --last_name=Zwinglio --quiet

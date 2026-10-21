@@ -75,6 +75,7 @@ Plugins próprios ficam em `wp-content/plugins/`:
 | `farol-fontes` | Bloco **Fonte**: cita posts, vídeos e matérias de outros veículos. Detalhes abaixo. |
 | `farol-social` | **Imagens para redes**: artes de feed e stories com título, editoria e foto. Detalhes abaixo. |
 | `farol-midia` | **Mídia no Cloudflare R2**: imagens e vídeos no bucket, servidos pelo CDN; vídeos enviados direto do navegador. Detalhes abaixo. |
+| `farol-newsletter` | **Newsletter**: inscrição com confirmação por e-mail, resumo automático das matérias e descadastro com um clique. Detalhes abaixo. |
 
 ### Plugin `farol-midia`: imagens e vídeos no R2
 
@@ -87,6 +88,15 @@ Com as variáveis `R2_*` no `.env` do CMS, cada upload (e todos os tamanhos que 
 - **Sem SDK:** a assinatura S3 (SigV4) é própria, testada contra os exemplos oficiais da AWS. `R2_ENDPOINT` permite apontar para um S3 local (ex.: MinIO) em testes.
 
 Passo a passo do Cloudflare (bucket, domínio, CORS e token) em [DEPLOY.md](DEPLOY.md), seção 2.7.
+
+### Plugin `farol-newsletter`: newsletter
+
+- **Inscrição:** formulário no rodapé, no fim das matérias e em `/newsletter`. Funciona sem JavaScript: o front recebe o POST e chama o WordPress (`farol-newsletter/v1`). Um campo escondido barra robôs.
+- **Confirmação (double opt-in):** a pessoa só entra na lista depois de clicar no link do e-mail (`/newsletter/confirmar`). No máximo um e-mail de confirmação a cada 10 minutos por endereço.
+- **Edições:** resumo com as matérias publicadas desde a última edição, diário ou semanal (dia e hora em *Configurações → O Farol → Newsletter*), ou enviado na hora pelo botão. Sem matéria nova, não sai. O envio é em lotes pelo cron (~40 s por execução), retomando de onde parou.
+- **Descadastro:** link no fim de cada edição (`/newsletter/sair`, pede um clique para confirmar) e cabeçalho `List-Unsubscribe` de um clique para Gmail e outros.
+- **Inscritos:** tabela própria (`wp_farol_newsletter`), exportação em CSV e exclusão definitiva de um e-mail (pedidos de LGPD) na mesma aba.
+- **Envio:** `SMTP_*` e `MAIL_FROM*` no `.env` do CMS valem para todos os e-mails do WordPress. Passo a passo em [DEPLOY.md](DEPLOY.md), seção 2.8.
 
 ### Plugin `farol-social`: imagens para redes
 

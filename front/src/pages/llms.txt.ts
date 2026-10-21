@@ -30,6 +30,7 @@ export const GET: APIRoute = async () => {
     '',
     `- [Sobre e expediente](${url('/sobre')}): quem somos e linha editorial`,
     `- [Contato](${url('/contato')}): fale com a redação`,
+    `- [Newsletter](${url('/newsletter')}): as principais notícias por e-mail`,
     `- [RSS](${url('/rss.xml')}): feed com o texto completo das notícias`,
     '',
     '## Editorias',

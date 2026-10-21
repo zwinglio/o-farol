@@ -1,0 +1,64 @@
+---
+/**
+ * Formulário de inscrição na newsletter. Envia para /newsletter (POST), que
+ * fala com o WordPress — funciona sem JavaScript. O campo "site" é uma
+ * armadilha para robôs: fica escondido e, se vier preenchido, é ignorado.
+ */
+interface Props {
+  /** De onde veio a inscrição (fica registrado no CMS). */
+  source: 'rodape' | 'materia' | 'pagina';
+  variant?: 'box' | 'compact';
+  title?: string;
+  text?: string;
+}
+
+const {
+  source,
+  variant = 'box',
+  title = 'Receba O Farol no seu e-mail',
+  text = 'As principais notícias, direto na sua caixa de entrada. Sem spam; você sai quando quiser.',
+} = Astro.props;
+const id = `nl-${source}`;
+---
+
+<section class:list={['newsletter', variant]} aria-labelledby={`${id}-title`}>
+  <p id={`${id}-title`} class="title">{title}</p>
+  <p class="text">{text}</p>
+  <form method="post" action="/newsletter">
+    <input type="hidden" name="source" value={source} />
+    <label class="trap" aria-hidden="true">
+      Não preencha <input type="text" name="site" tabindex="-1" autocomplete="off" />
+    </label>
+    <label for={`${id}-email`} class="visually-hidden">Seu e-mail</label>
+    <input id={`${id}-email`} type="email" name="email" placeholder="seu@email.com" autocomplete="email" required />
+    <button type="submit">Inscrever-se</button>
+  </form>
+</section>
+
+<style>
+  .newsletter { display: grid; gap: 0.5rem; }
+  .box { padding: 1.5rem; background: var(--soft); border-top: 3px solid var(--accent); }
+  .title { margin: 0; font-family: var(--serif); font-size: 1.35rem; font-weight: 700; line-height: 1.2; }
+  .compact .title { font-family: inherit; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  .text { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .compact .text { font-size: 0.85rem; }
+
+  form { display: flex; gap: 0.5rem; margin-top: 0.4rem; }
+  input[type='email'] {
+    flex: 1; min-width: 0; padding: 0.65rem 0.8rem;
+    font: inherit; color: var(--text); background: var(--bg);
+    border: 1px solid #c9cbd1; border-radius: 0;
+  }
+  input[type='email']:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent); }
+  button {
+    padding: 0.65rem 1.1rem; font: inherit; font-weight: 700; white-space: nowrap;
+    color: var(--accent-ink); background: var(--accent); border: 0; cursor: pointer;
+  }
+  button:hover { background: var(--accent-dark); }
+
+  .trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  @media (max-width: 30rem) {
+    form { flex-direction: column; }
+  }
+</style>

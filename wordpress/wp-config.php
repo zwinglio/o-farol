@@ -122,6 +122,16 @@ define( 'FAROL_R2_KEEP_LOCAL', (bool) farol_env( 'R2_KEEP_LOCAL', true ) );
 // Só para desenvolvimento/testes (ex.: MinIO). Em produção fica vazio.
 define( 'FAROL_R2_ENDPOINT', rtrim( (string) farol_env( 'R2_ENDPOINT', '' ), '/' ) );
 
+// ** E-mail (plugin farol-newsletter). Sem SMTP_HOST, sai pelo mail() do PHP. ** //
+define( 'FAROL_SMTP_HOST', (string) farol_env( 'SMTP_HOST', '' ) );
+define( 'FAROL_SMTP_PORT', (int) farol_env( 'SMTP_PORT', 587 ) );
+define( 'FAROL_SMTP_USER', (string) farol_env( 'SMTP_USER', '' ) );
+define( 'FAROL_SMTP_PASS', (string) farol_env( 'SMTP_PASS', '' ) );
+// tls (porta 587, STARTTLS), ssl (porta 465) ou none (testes locais).
+define( 'FAROL_SMTP_SECURE', (string) farol_env( 'SMTP_SECURE', 'tls' ) );
+define( 'FAROL_MAIL_FROM', (string) farol_env( 'MAIL_FROM', '' ) );
+define( 'FAROL_MAIL_FROM_NAME', (string) farol_env( 'MAIL_FROM_NAME', '' ) );
+
 // ** Ambiente e depuração ** //
 define( 'WP_ENVIRONMENT_TYPE', farol_env( 'WP_ENVIRONMENT_TYPE', 'production' ) );
 define( 'WP_DEBUG', (bool) farol_env( 'WP_DEBUG', false ) );

@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import Newsletter from '../../components/Newsletter.astro';
+import { subscribe, type NewsletterResult } from '../../lib/newsletter';
+
+const SOURCES = ['rodape', 'materia', 'pagina'];
+let result: NewsletterResult | null = null;
+let email = '';
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  email = String(form.get('email') ?? '').trim();
+  const source = String(form.get('source') ?? '');
+  // Robô preencheu a armadilha: finge que deu certo e não faz nada.
+  result = form.get('site') ? 'ok' : await subscribe(email, SOURCES.includes(source) ? source : 'pagina');
+}
+---
+
+<Base
+  title="Newsletter"
+  description="Receba as principais notícias do O Farol no seu e-mail."
+  noindex={result !== null}
+>
+  <div class="measure">
+    <h1>Newsletter</h1>
+
+    {result === 'ok' && (
+      <div class="message ok" role="status">
+        <p><strong>Quase lá!</strong> Enviamos um link de confirmação para <strong>{email}</strong>.</p>
+        <p>Abra o e-mail e clique em <em>Confirmar inscrição</em>. Se não chegar em alguns minutos, confira a pasta de spam ou promoções.</p>
+      </div>
+    )}
+    {result === 'invalid' && (
+      <p class="message error" role="alert">Esse e-mail não parece válido. Confira e tente de novo.</p>
+    )}
+    {result === 'error' && (
+      <p class="message error" role="alert">Não conseguimos concluir a inscrição agora. Tente de novo em alguns minutos.</p>
+    )}
+
+    {result !== 'ok' && (
+      <>
+        <p class="intro">
+          As principais notícias do Farol, direto na sua caixa de entrada. Você confirma a inscrição pelo
+          e-mail e pode sair a qualquer momento, pelo link no fim de cada edição.
+        </p>
+        <Newsletter source="pagina" title="Inscreva-se" text="Só precisamos do seu e-mail." />
+      </>
+    )}
+  </div>
+</Base>
+
+<style>
+  h1 { font-family: var(--serif); font-size: 2.4rem; line-height: 1.1; margin: 0 0 0.75rem; }
+  .intro { margin: 0 0 2rem; color: var(--muted); font-family: var(--serif); font-size: 1.15rem; }
+  .message { margin: 0 0 1.5rem; padding: 1rem 1.25rem; border-left: 4px solid; }
+  .message p { margin: 0; }
+  .message p + p { margin-top: 0.5rem; }
+  .ok { border-color: #1a7f37; background: #eef7f0; }
+  .error { border-color: var(--accent); background: var(--soft); }
+</style>

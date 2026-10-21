@@ -1,6 +1,7 @@
 ---
 import { SITE } from '../lib/site';
 import { getMenu } from '../lib/wp';
+import Newsletter from './Newsletter.astro';
 
 const [principal, institucional] = await Promise.all([getMenu('principal'), getMenu('institucional')]);
 const editorias = principal.filter((l) => l.href !== '/');
@@ -18,6 +19,9 @@ const year = new Date().getFullYear();
         <span>{SITE.name}</span>
       </p>
       <p class="muted">{SITE.description}</p>
+      <div class="signup">
+        <Newsletter source="rodape" variant="compact" title="Newsletter" text="As principais notícias no seu e-mail." />
+      </div>
     </div>
     <nav aria-label="Editorias">
       <p class="label">Editorias</p>
@@ -44,6 +48,7 @@ const year = new Date().getFullYear();
   }
   .brand svg { width: 0.85em; height: 0.85em; flex: none; }
   .muted { margin: 0; color: var(--muted); max-width: 26rem; }
+  .signup { margin-top: 1.5rem; max-width: 26rem; }
   .label { margin: 0 0 0.5rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
   ul { margin: 0; padding: 0; list-style: none; }
   li + li { margin-top: 0.35rem; }

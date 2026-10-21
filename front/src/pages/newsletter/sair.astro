@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import { unsubscribe, validToken, type NewsletterResult } from '../../lib/newsletter';
+
+// O descadastro pede um clique: antivírus de e-mail abrem os links das
+// mensagens sozinhos e, se o GET bastasse, tirariam gente da lista.
+let token = Astro.url.searchParams.get('token');
+let result: NewsletterResult | null = null;
+
+if (Astro.request.method === 'POST') {
+  token = String((await Astro.request.formData()).get('token') ?? '');
+  result = validToken(token) ? await unsubscribe(token) : 'invalid';
+} else if (!validToken(token)) {
+  result = 'invalid';
+}
+---
+
+<Base title="Cancelar inscrição" noindex>
+  <div class="measure">
+    {result === null && (
+      <>
+        <h1>Cancelar inscrição</h1>
+        <p class="intro">Você deixa de receber a newsletter do Farol neste e-mail.</p>
+        <form method="post">
+          <input type="hidden" name="token" value={token} />
+          <button type="submit">Cancelar inscrição</button>
+        </form>
+      </>
+    )}
+    {result === 'ok' && (
+      <>
+        <h1>Inscrição cancelada</h1>
+        <p class="intro">Você não vai mais receber a newsletter. Mudou de ideia? <a href="/newsletter">Inscreva-se de novo</a>.</p>
+      </>
+    )}
+    {result === 'invalid' && (
+      <>
+        <h1>Link inválido</h1>
+        <p class="intro">Não encontramos esta inscrição. Use o link do fim de um e-mail recente da newsletter.</p>
+      </>
+    )}
+    {result === 'error' && (
+      <>
+        <h1>Algo deu errado</h1>
+        <p class="intro">Não conseguimos cancelar agora. Tente de novo em alguns minutos.</p>
+      </>
+    )}
+  </div>
+</Base>
+
+<style>
+  h1 { font-family: var(--serif); font-size: 2.4rem; line-height: 1.1; margin: 0 0 0.75rem; }
+  .intro { margin: 0 0 1.5rem; color: var(--muted); font-family: var(--serif); font-size: 1.15rem; }
+  button {
+    padding: 0.8rem 1.6rem; font: inherit; font-weight: 700;
+    color: var(--accent-ink); background: var(--accent); border: 0; cursor: pointer;
+  }
+  button:hover { background: var(--accent-dark); }
+</style>

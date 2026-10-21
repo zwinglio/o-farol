@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Story from '../../components/Story.astro';
 import Share from '../../components/Share.astro';
+import Newsletter from '../../components/Newsletter.astro';
 import { PUBLIC_SITE_URL } from 'astro:env/client';
 import { getPostBySlug, getPosts, formatDateTime, plain } from '../../lib/wp';
 import { cachePublic } from '../../lib/http';
@@ -58,6 +59,7 @@ const updated = new Date(post.modified).getTime() - new Date(post.date).getTime(
 
     <footer class="measure foot">
       <Share url={shareUrl} title={plain(post.title)} />
+      <div class="signup"><Newsletter source="materia" /></div>
     </footer>
   </article>
 
@@ -87,6 +89,7 @@ const updated = new Date(post.modified).getTime() - new Date(post.date).getTime(
   .dates { margin-top: 0.2rem !important; }
   .head :global(.share) { margin-top: 1rem; }
   .foot { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+  .signup { margin-top: 2rem; }
 
   .cover { max-width: 60rem; margin: 0 auto 2rem; }
   .cover img { display: block; width: 100%; }

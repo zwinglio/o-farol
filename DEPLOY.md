@@ -119,7 +119,7 @@ wp core install --url=https://cms.ofarol.com.br --title="O Farol" --locale=pt_BR
 # A instalação cria "Olá, mundo!" e "Página de exemplo": sem isto, o "Olá, mundo!" vira a manchete do site.
 wp post delete $(wp post list --post_type=post,page --post_status=any --format=ids) --force
 wp theme activate farol-headless
-wp plugin activate farol-seo farol-fontes farol-social
+wp plugin activate farol-seo farol-fontes farol-social farol-midia farol-newsletter
 wp rewrite structure '/%postname%/'
 wp option update timezone_string America/Sao_Paulo
 make categories menus WP_CLI_BUILD=wp-cli
@@ -354,11 +354,39 @@ O editor de imagens do WordPress continua funcionando: sem o arquivo local, ele 
 
 ---
 
+## 2.8 Newsletter e e-mail (plugin `farol-newsletter`)
+
+Os e-mails (confirmação de inscrição, edições e qualquer outro do WordPress) saem pelo SMTP de um serviço de envio. Sem ele, saem pelo `mail()` do PHP e caem no spam.
+
+### No serviço de envio (Amazon SES, Resend, Brevo…)
+
+1. Verificar o domínio `ofarol.com.br` e publicar no DNS os registros que o serviço pedir: **SPF**, **DKIM** e um **DMARC** (ex.: `v=DMARC1; p=none; rua=mailto:voce@exemplo.com`). Gmail e Yahoo recusam envio em volume sem os três.
+2. Criar a credencial SMTP. No SES, sair do modo *sandbox* (pedido no console), senão só envia para endereços verificados.
+
+### No CMS
+
+```bash
+PHP=php8.5 ./deploy/cms.sh          # traz e ativa o farol-newsletter
+nano .env
+#   SMTP_HOST=email-smtp.sa-east-1.amazonaws.com   (exemplo do SES)
+#   SMTP_PORT=587
+#   SMTP_USER=...
+#   SMTP_PASS=...
+#   SMTP_SECURE=tls
+#   MAIL_FROM=newsletter@ofarol.com.br
+#   MAIL_FROM_NAME=O Farol
+```
+
+Em **Configurações → O Farol → Newsletter**: **Enviar teste para mim**, conferir se chegou na caixa de entrada (não no spam) e escolher a programação (diária ou semanal). O envio é feito em lotes pelo cron (seção 1.7), então o cron precisa estar rodando.
+
+---
+
 ## 3. Depois do primeiro deploy
 
 - [ ] **Configurações → O Farol → SEO e GEO**: descrição, logo, imagem social padrão, perfis oficiais, política para robôs de IA.
 - [ ] **Usuários → Perfil**: nome de exibição e biografia (pesa no score GEO).
 - [ ] **Aparência → Menus**: conferir *Principal* e *Institucional*.
+- [ ] **Configurações → O Farol → Newsletter**: enviar um teste e inscrever-se pelo site (`/newsletter`) para ver a confirmação chegar.
 - [ ] **Google Search Console** e **Bing Webmaster**: verificar o domínio e enviar `https://ofarol.com.br/sitemap.xml` e `/news-sitemap.xml`.
 - [ ] Publicar um post de teste **agendado** para daqui a 5 minutos e confirmar que ele sai (testa o cron).
 - [ ] A primeira notícia publicada vira a manchete; enquanto houver menos de 3 outras, a capa mostra o bloco "Sobre O Farol" ao lado. Use *Fixar no topo do blog* para escolher a manchete.
