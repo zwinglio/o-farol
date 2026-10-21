@@ -1,6 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Story from '../../components/Story.astro';
+import Share from '../../components/Share.astro';
+import { PUBLIC_SITE_URL } from 'astro:env/client';
 import { getPostBySlug, getPosts, formatDateTime, plain } from '../../lib/wp';
 import { cachePublic } from '../../lib/http';
 
@@ -13,6 +15,7 @@ const related = section
   : [];
 cachePublic(Astro);
 
+const shareUrl = new URL(Astro.url.pathname, PUBLIC_SITE_URL).href;
 const updated = new Date(post.modified).getTime() - new Date(post.date).getTime() > 60 * 60 * 1000;
 ---
 
@@ -36,6 +39,7 @@ const updated = new Date(post.modified).getTime() - new Date(post.date).getTime(
           <span> · {post.readingTime} min de leitura</span>
         </p>
       </div>
+      <Share url={shareUrl} title={plain(post.title)} />
     </header>
 
     {post.image && (
@@ -51,6 +55,10 @@ const updated = new Date(post.modified).getTime() - new Date(post.date).getTime(
     )}
 
     <div class="prose measure" set:html={post.content} />
+
+    <footer class="measure foot">
+      <Share url={shareUrl} title={plain(post.title)} />
+    </footer>
   </article>
 
   {related.length > 0 && (
@@ -77,6 +85,8 @@ const updated = new Date(post.modified).getTime() - new Date(post.date).getTime(
   .byline p { margin: 0; }
   .author { color: var(--text); font-size: 0.95rem; }
   .dates { margin-top: 0.2rem !important; }
+  .head :global(.share) { margin-top: 1rem; }
+  .foot { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
 
   .cover { max-width: 60rem; margin: 0 auto 2rem; }
   .cover img { display: block; width: 100%; }
