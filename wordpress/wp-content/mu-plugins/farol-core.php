@@ -141,6 +141,39 @@ add_action(
 				},
 			)
 		);
+
+		// Linha fina = só o resumo escrito à mão. O excerpt da API cai no
+		// começo do texto quando ele está vazio, e repetiria o 1º parágrafo.
+		register_rest_field(
+			'post',
+			'farol_dek',
+			array(
+				'description' => 'Linha fina (resumo manual). Vazia quando não foi preenchida.',
+				'schema'      => array(
+					'type'     => 'string',
+					'readonly' => true,
+				),
+				'get_callback' => fn( array $post ) => trim( wp_strip_all_tags( get_post_field( 'post_excerpt', $post['id'] ) ) ),
+			)
+		);
+	}
+);
+
+// No editor, o painel "Resumo" vira "Linha fina", que é como a redação o usa.
+add_action(
+	'enqueue_block_editor_assets',
+	function () {
+		$labels = array(
+			'Excerpt'                     => 'Linha fina',
+			'Add an excerpt'              => 'Adicionar linha fina',
+			'Add an excerpt…'             => 'Adicionar linha fina…',
+			'Edit excerpt'                => 'Editar linha fina',
+			'Write an excerpt (optional)' => 'Escreva a linha fina (aparece abaixo do título)',
+		);
+		wp_add_inline_script(
+			'wp-i18n',
+			'(function(l){wp.hooks.addFilter("i18n.gettext_default","farol/linha-fina",function(t,s){return l[s]||t;});})(' . wp_json_encode( $labels ) . ');'
+		);
 	}
 );
 

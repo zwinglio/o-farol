@@ -18,7 +18,7 @@ const updated = new Date(post.modified).getTime() - new Date(post.date).getTime(
 
 <Base
   title={plain(post.title)}
-  description={plain(post.excerpt)}
+  description={post.dek || plain(post.excerpt)}
   seo={post.seo}
   publishedTime={post.date}
   modifiedTime={post.modified}
@@ -27,7 +27,7 @@ const updated = new Date(post.modified).getTime() - new Date(post.date).getTime(
     <header class="measure head">
       {section && <a class="kicker" href={`/${section.slug}`}>{section.name}</a>}
       <h1 set:html={post.title} />
-      <div class="dek" set:html={post.excerpt} />
+      {post.dek && <p class="dek">{post.dek}</p>}
       <div class="byline">
         <p class="author">Por <strong>{post.author?.name ?? 'Redação'}</strong></p>
         <p class="dates">
@@ -69,8 +69,7 @@ const updated = new Date(post.modified).getTime() - new Date(post.date).getTime(
     margin: 0.25rem 0 0; font-family: var(--serif);
     font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.1; letter-spacing: -0.02em;
   }
-  .dek { color: var(--muted); font-family: var(--serif); font-size: 1.3rem; line-height: 1.45; }
-  .dek :global(p) { margin: 0.9rem 0 0; }
+  .dek { margin: 0.9rem 0 0; color: var(--muted); font-family: var(--serif); font-size: 1.3rem; line-height: 1.45; }
   .byline {
     margin-top: 1.5rem; padding-block: 0.9rem;
     border-block: 1px solid var(--line); font-size: 0.85rem; color: var(--muted);

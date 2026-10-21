@@ -24,6 +24,8 @@ export interface Post {
   slug: string;
   title: string;
   excerpt: string;
+  /** Linha fina: só o resumo escrito à mão (vazia se não preenchida). */
+  dek: string;
   content: string;
   date: string;
   modified: string;
@@ -69,7 +71,7 @@ export class WPError extends Error {
 const EMBED = 'author,wp:featuredmedia,wp:term';
 const FIELDS = [
   'id', 'slug', 'title', 'excerpt', 'content', 'date_gmt', 'modified_gmt',
-  'farol_reading_time', '_links', '_embedded',
+  'farol_reading_time', 'farol_dek', '_links', '_embedded',
 ].join(',');
 const HIDDEN_CATEGORIES = new Set(['sem-categoria', 'uncategorized']);
 
@@ -96,6 +98,7 @@ function normalize(raw: any): Post {
     slug: raw.slug,
     title: raw.title?.rendered ?? '',
     excerpt: raw.excerpt?.rendered ?? '',
+    dek: raw.farol_dek ?? '',
     content: raw.content?.rendered ?? '',
     date: `${raw.date_gmt}Z`,
     modified: `${raw.modified_gmt}Z`,

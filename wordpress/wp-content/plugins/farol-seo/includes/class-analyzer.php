@@ -211,8 +211,8 @@ final class Farol_SEO_Analyzer {
 			: self::check( 'slug_length', 'URL', $slug_l <= 90 ? 'ok' : 'bad', 1, "A URL tem {$slug_l} caracteres. Encurte para até 60." );
 
 		$checks[] = '' !== trim( self::plain( $this->input['excerpt'] ) )
-			? self::check( 'excerpt', 'Linha fina', 'good', 1, 'Linha fina (resumo) preenchida.' )
-			: self::check( 'excerpt', 'Linha fina', 'ok', 1, 'Escreva a linha fina no campo Resumo: ela abre a matéria e alimenta a descrição.' );
+			? self::check( 'excerpt', 'Linha fina', 'good', 1, 'Linha fina preenchida.' )
+			: self::check( 'excerpt', 'Linha fina', 'ok', 1, 'Escreva a linha fina no painel Linha fina: ela abre a matéria e alimenta a descrição.' );
 
 		return $checks;
 	}
