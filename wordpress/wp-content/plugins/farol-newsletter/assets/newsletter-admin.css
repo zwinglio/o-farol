@@ -1,0 +1,302 @@
+/* Newsletter no painel: montador (campanhas e templates), listas e inscritos. */
+
+/* ------------------------- Montador ------------------------- */
+
+.farol-nl-compose {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(360px, 640px);
+	gap: 24px;
+	align-items: start;
+}
+
+@media (max-width: 1280px) {
+	.farol-nl-compose {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.farol-nl-panel {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	padding: 4px 16px;
+	margin: 12px 0;
+}
+
+.farol-nl-row {
+	display: grid;
+	grid-template-columns: 160px minmax(0, 1fr);
+	gap: 4px 12px;
+	align-items: center;
+	margin: 12px 0;
+}
+
+.farol-nl-row > label,
+.farol-nl-row > .farol-nl-label {
+	font-weight: 600;
+}
+
+.farol-nl-row > .description,
+.farol-nl-row > button + .description {
+	grid-column: 2;
+}
+
+.farol-nl-row > select + .button {
+	justify-self: start;
+	grid-column: 2;
+}
+
+.farol-nl-lists {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 18px;
+}
+
+.farol-nl-blocks {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.farol-nl-block {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-left: 4px solid #2271b1;
+}
+
+.farol-nl-block[data-type="posts"],
+.farol-nl-block[data-type="latest"] {
+	border-left-color: #c4161c;
+}
+
+.farol-nl-block[data-type="divider"],
+.farol-nl-block[data-type="spacer"] {
+	border-left-color: #a7aaad;
+}
+
+.farol-nl-block-head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	background: #f6f7f7;
+	border-bottom: 1px solid #e3e4e8;
+}
+
+.farol-nl-block-actions {
+	margin-left: auto;
+	display: flex;
+	gap: 2px;
+}
+
+.farol-nl-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	color: #50575e;
+	text-decoration: none;
+	box-shadow: none;
+	border-radius: 3px;
+}
+
+.farol-nl-icon:hover,
+.farol-nl-icon:focus {
+	background: #e3e4e8;
+	color: #1d2327;
+}
+
+.farol-nl-icon[data-action="remove"]:hover,
+.farol-nl-icon[data-action="unpick"]:hover {
+	color: #b32d2e;
+}
+
+.farol-nl-block-body {
+	padding: 10px 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.farol-nl-block-body > select {
+	align-self: start;
+}
+
+.farol-nl-field {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.farol-nl-field-label {
+	font-weight: 600;
+}
+
+.farol-nl-inline {
+	display: flex;
+	gap: 6px;
+}
+
+.farol-nl-grip {
+	color: #a7aaad;
+	cursor: grab;
+	letter-spacing: -2px;
+	user-select: none;
+}
+
+.farol-nl-placeholder {
+	border: 1px dashed #2271b1;
+	background: #f0f6fb;
+	min-height: 40px;
+	list-style: none;
+}
+
+.farol-nl-addbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	margin: 12px 0;
+	padding: 10px;
+	border: 1px dashed #c3c4c7;
+	background: #fbfbfc;
+}
+
+.farol-nl-addbar > span {
+	font-weight: 600;
+	margin-right: 4px;
+}
+
+.farol-nl-vars code {
+	font-size: 12px;
+}
+
+/* Seletor de matérias dentro do bloco */
+
+.farol-nl-picked,
+.farol-nl-results {
+	margin: 0;
+}
+
+.farol-nl-picked li,
+.farol-nl-results li {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 4px;
+	margin: 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.farol-nl-picked li {
+	background: #fff;
+}
+
+.farol-nl-picked li:first-child .farol-nl-post-title {
+	font-weight: 600;
+}
+
+.farol-nl-picked [data-action="unpick"] {
+	margin-left: auto;
+}
+
+.farol-nl-results {
+	max-height: 240px;
+	overflow-y: auto;
+}
+
+.farol-nl-results li small {
+	color: #787c82;
+	margin-left: auto;
+	flex-shrink: 0;
+}
+
+.farol-nl-pick {
+	text-align: left;
+}
+
+.farol-nl-empty {
+	color: #787c82;
+	font-style: italic;
+	border-bottom: 0 !important;
+}
+
+/* Prévia */
+
+.farol-nl-compose-preview {
+	position: sticky;
+	top: 46px;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+}
+
+.farol-nl-preview-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 12px;
+	padding: 8px 12px;
+	border-bottom: 1px solid #e3e4e8;
+	background: #f6f7f7;
+}
+
+.farol-nl-audience {
+	margin-left: auto;
+	color: #2271b1;
+	font-weight: 600;
+}
+
+.farol-nl-preview-subject {
+	flex-basis: 100%;
+	color: #50575e;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.farol-nl-preview-subject > span:first-child {
+	color: #787c82;
+}
+
+#farol-nl-preview {
+	display: block;
+	width: 100%;
+	height: calc(100vh - 160px);
+	min-height: 520px;
+	border: 0;
+	background: #f4f4f6;
+}
+
+/* ------------------------- Listas, templates, inscritos ------------------------- */
+
+.farol-nl-lists-page {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 360px;
+	gap: 24px;
+	align-items: start;
+}
+
+@media (max-width: 1100px) {
+	.farol-nl-lists-page {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.farol-nl-badge {
+	display: inline-block;
+	margin-left: 6px;
+	padding: 1px 6px;
+	font-size: 11px;
+	border-radius: 3px;
+	background: #f0f0f1;
+	color: #50575e;
+}
+
+.farol-nl-badge.is-active {
+	background: #edfaef;
+	color: #00a32a;
+}
+
+.farol-nl-bulk {
+	margin: 8px 0;
+}

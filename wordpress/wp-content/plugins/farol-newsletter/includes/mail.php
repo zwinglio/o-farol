@@ -1,7 +1,7 @@
 <?php
 /**
- * Envio: SMTP pelo .env (SMTP_*), remetente, modelo HTML dos e-mails e o
- * e-mail de confirmação.
+ * Envio: SMTP pelo .env (SMTP_*), remetente, a moldura HTML dos e-mails e o
+ * e-mail de confirmação (conteúdo no template "Confirmação").
  *
  * @package FarolNewsletter
  */
@@ -109,21 +109,26 @@ function farol_newsletter_button( string $url, string $label ): string {
 	);
 }
 
+/** E-mail de confirmação, montado com o template "Confirmação". */
 function farol_newsletter_send_confirmation( string $email, string $token ): bool {
-	$site = get_bloginfo( 'name' );
-	$url  = farol_newsletter_link( '/newsletter/confirmar', $token );
+	$url = farol_newsletter_link( '/newsletter/confirmar', $token );
+	$m   = farol_newsletter_confirmation_email( $url );
+	return farol_newsletter_mail( $email, $m['subject'], $m['html'], $m['text'] );
+}
 
-	$body = '<p style="margin:0 0 12px;">Olá!</p>'
-		. '<p style="margin:0 0 12px;">Recebemos um pedido para inscrever este e-mail na newsletter do ' . esc_html( $site ) . '. Para começar a receber, confirme no botão abaixo.</p>'
-		. farol_newsletter_button( $url, 'Confirmar inscrição' )
-		. '<p style="margin:0;color:#5b5e66;font-size:14px;">Se o botão não funcionar, copie e cole este endereço no navegador:<br><a href="' . esc_url( $url ) . '" style="color:#5b5e66;word-break:break-all;">' . esc_html( $url ) . '</a></p>';
-
-	$html = farol_newsletter_layout(
-		'Confirme sua inscrição',
-		$body,
-		'Se não foi você, ignore este e-mail: sem a confirmação, você não será inscrito.'
+/**
+ * Monta o e-mail de confirmação. O link também vai no rodapé, fora do
+ * template, para a confirmação funcionar mesmo que o botão seja apagado.
+ *
+ * @return array{subject: string, html: string, text: string}
+ */
+function farol_newsletter_confirmation_email( string $url, ?object $template = null ): array {
+	$m      = farol_newsletter_compose( $template ?? farol_newsletter_confirmation_template(), array( 'vars' => array( 'link_confirmacao' => $url ) ) );
+	$footer = 'Se o botão não funcionar, copie e cole este endereço no navegador:<br><a href="' . esc_url( $url ) . '" style="color:#5b5e66;word-break:break-all;">' . esc_html( $url ) . '</a><br><br>'
+		. 'Se não foi você, ignore este e-mail: sem a confirmação, você não será inscrito.';
+	return array(
+		'subject' => $m['subject'],
+		'html'    => farol_newsletter_layout( $m['preheader'], $m['html'], $footer ),
+		'text'    => $m['text'] . "\nPara confirmar, abra:\n{$url}\n\nSe não foi você, ignore este e-mail.",
 	);
-	$text = "Recebemos um pedido para inscrever este e-mail na newsletter do {$site}.\n\nPara confirmar, abra:\n{$url}\n\nSe não foi você, ignore este e-mail.";
-
-	return farol_newsletter_mail( $email, "Confirme sua inscrição na newsletter do {$site}", $html, $text );
 }

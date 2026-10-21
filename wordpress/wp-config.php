@@ -131,6 +131,9 @@ define( 'FAROL_SMTP_PASS', (string) farol_env( 'SMTP_PASS', '' ) );
 define( 'FAROL_SMTP_SECURE', (string) farol_env( 'SMTP_SECURE', 'tls' ) );
 define( 'FAROL_MAIL_FROM', (string) farol_env( 'MAIL_FROM', '' ) );
 define( 'FAROL_MAIL_FROM_NAME', (string) farol_env( 'MAIL_FROM_NAME', '' ) );
+// Teto de e-mails de campanha por dia (plano gratuito do Brevo: 300 → use ~280).
+// 0 = sem limite. E-mails transacionais (confirmação, senha) não entram na cota.
+define( 'FAROL_NEWSLETTER_DAILY_LIMIT', (int) farol_env( 'NEWSLETTER_DAILY_LIMIT', 0 ) );
 
 // ** Ambiente e depuração ** //
 define( 'WP_ENVIRONMENT_TYPE', farol_env( 'WP_ENVIRONMENT_TYPE', 'production' ) );

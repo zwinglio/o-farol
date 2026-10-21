@@ -368,16 +368,17 @@ Os e-mails (confirmação de inscrição, edições e qualquer outro do WordPres
 ```bash
 PHP=php8.5 ./deploy/cms.sh          # traz e ativa o farol-newsletter
 nano .env
-#   SMTP_HOST=email-smtp.sa-east-1.amazonaws.com   (exemplo do SES)
+#   SMTP_HOST=smtp-relay.brevo.com   (Brevo; SES: email-smtp.sa-east-1.amazonaws.com)
 #   SMTP_PORT=587
-#   SMTP_USER=...
-#   SMTP_PASS=...
+#   SMTP_USER=...                    (Brevo: o e-mail da conta)
+#   SMTP_PASS=...                    (Brevo: a "chave SMTP" de SMTP & API → SMTP)
 #   SMTP_SECURE=tls
 #   MAIL_FROM=newsletter@ofarol.com.br
 #   MAIL_FROM_NAME=O Farol
+#   NEWSLETTER_DAILY_LIMIT=280       (plano gratuito do Brevo fecha em 300/dia)
 ```
 
-Em **Configurações → O Farol → Newsletter**: **Enviar teste para mim**, conferir se chegou na caixa de entrada (não no spam) e escolher a programação (diária ou semanal). O envio é feito em lotes pelo cron (seção 1.7), então o cron precisa estar rodando.
+A newsletter tem menu próprio no painel: **Newsletter → Campanhas** (montador em blocos, escolha das listas, agendamento e acompanhamento dos envios), **Listas**, **Inscritos** (busca, filtro por lista, inclusão manual, ações em lote, CSV), **Templates** (o "Semanal" do resumo e o e-mail de "Confirmação") e **Automação** (programação do resumo diário/semanal, template e listas). Na atualização, o plugin cria a lista "Geral" com todos os inscritos que já existiam. O envio vai em lotes pelo cron (seção 1.7) e para ao bater o `NEWSLETTER_DAILY_LIMIT`, continuando no dia seguinte. Em **Newsletter → Automação**: **Enviar teste para mim**, conferir se chegou na caixa de entrada (não no spam) e escolher a programação (diária ou semanal).
 
 ---
 
@@ -386,7 +387,7 @@ Em **Configurações → O Farol → Newsletter**: **Enviar teste para mim**, co
 - [ ] **Configurações → O Farol → SEO e GEO**: descrição, logo, imagem social padrão, perfis oficiais, política para robôs de IA.
 - [ ] **Usuários → Perfil**: nome de exibição e biografia (pesa no score GEO).
 - [ ] **Aparência → Menus**: conferir *Principal* e *Institucional*.
-- [ ] **Configurações → O Farol → Newsletter**: enviar um teste e inscrever-se pelo site (`/newsletter`) para ver a confirmação chegar.
+- [ ] **Newsletter → Automação**: enviar um teste e inscrever-se pelo site (`/newsletter`) para ver a confirmação chegar.
 - [ ] **Google Search Console** e **Bing Webmaster**: verificar o domínio e enviar `https://ofarol.com.br/sitemap.xml` e `/news-sitemap.xml`.
 - [ ] Publicar um post de teste **agendado** para daqui a 5 minutos e confirmar que ele sai (testa o cron).
 - [ ] A primeira notícia publicada vira a manchete; enquanto houver menos de 3 outras, a capa mostra o bloco "Sobre O Farol" ao lado. Use *Fixar no topo do blog* para escolher a manchete.

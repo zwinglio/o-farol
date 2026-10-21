@@ -93,9 +93,12 @@ Passo a passo do Cloudflare (bucket, domínio, CORS e token) em [DEPLOY.md](DEPL
 
 - **Inscrição:** formulário no rodapé, no fim das matérias e em `/newsletter`. Funciona sem JavaScript: o front recebe o POST e chama o WordPress (`farol-newsletter/v1`). Um campo escondido barra robôs.
 - **Confirmação (double opt-in):** a pessoa só entra na lista depois de clicar no link do e-mail (`/newsletter/confirmar`). No máximo um e-mail de confirmação a cada 10 minutos por endereço.
-- **Edições:** resumo com as matérias publicadas desde a última edição, diário ou semanal (dia e hora em *Configurações → O Farol → Newsletter*), ou enviado na hora pelo botão. Sem matéria nova, não sai. O envio é em lotes pelo cron (~40 s por execução), retomando de onde parou.
-- **Descadastro:** link no fim de cada edição (`/newsletter/sair`, pede um clique para confirmar) e cabeçalho `List-Unsubscribe` de um clique para Gmail e outros.
-- **Inscritos:** tabela própria (`wp_farol_newsletter`), exportação em CSV e exclusão definitiva de um e-mail (pedidos de LGPD) na mesma aba.
+- **Listas:** *Newsletter → Listas*. Cada inscrito pode estar em várias; quem se inscreve pelo site entra nas listas marcadas como padrão (começa com "Geral"), ou nas que o formulário pedir (`lists: ["slug"]` no POST de `/subscribe`).
+- **Campanhas:** montador em blocos (título, texto, matérias escolhidas, matérias recentes, imagem, botão, divisor, espaço) com prévia ao vivo, escolha das listas de destino (sem repetir quem está em mais de uma), teste e agendamento.
+- **Templates:** *Newsletter → Templates*. Dois de fábrica, editáveis e restauráveis: **Semanal** (o resumo automático) e **Confirmação** (o e-mail do double opt-in). Marcadores: `{{site}}`, `{{manchete}}`, `{{data}}`, `{{link_confirmacao}}`.
+- **Edições:** resumo com as matérias publicadas desde a última edição, diário ou semanal, com o template e as listas escolhidos em *Newsletter → Automação*, ou enviado na hora pelo botão. Sem matéria nova, não sai. O envio é em lotes pelo cron (~40 s por execução), retomando de onde parou.
+- **Descadastro:** link no fim de cada edição (`/newsletter/sair`, pede um clique para confirmar) e cabeçalho `List-Unsubscribe` de um clique para Gmail e outros. Sair vale para todas as listas.
+- **Inscritos:** tabela própria (`wp_farol_newsletter`), filtro por lista, ações em lote (pôr/tirar de lista, apagar), exportação em CSV e exclusão definitiva de um e-mail (pedidos de LGPD) na mesma aba.
 - **Envio:** `SMTP_*` e `MAIL_FROM*` no `.env` do CMS valem para todos os e-mails do WordPress. Passo a passo em [DEPLOY.md](DEPLOY.md), seção 2.8.
 
 ### Plugin `farol-social`: imagens para redes

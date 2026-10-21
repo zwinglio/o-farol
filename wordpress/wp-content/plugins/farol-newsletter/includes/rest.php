@@ -28,9 +28,11 @@ add_action(
 				'args'                => array(
 					'email'  => array( 'type' => 'string', 'required' => true ),
 					'source' => array( 'type' => 'string', 'default' => '' ),
+					// Slugs das listas; sem nenhum válido, entra nas listas padrão.
+					'lists'  => array( 'type' => 'array', 'items' => array( 'type' => 'string' ), 'default' => array() ),
 				),
 				'callback'            => function ( WP_REST_Request $r ) {
-					$result = farol_newsletter_subscribe( (string) $r['email'], (string) $r['source'] );
+					$result = farol_newsletter_subscribe( (string) $r['email'], (string) $r['source'], farol_newsletter_list_ids_from_slugs( (array) $r['lists'] ) );
 					return is_wp_error( $result ) ? $result : rest_ensure_response( array( 'ok' => true ) );
 				},
 			)
